@@ -1,0 +1,51 @@
+/* =========================
+   GENERATOR
+========================= */
+
+let gifDataURL = "";
+
+function buildCardHTML(){
+
+  const titolo =
+    escapeHTML(
+      document.getElementById("titolo").value
+    );
+
+  const frase =
+    nl2brSafe(
+      document.getElementById("frase").value
+    );
+
+  return `
+
+<div style="
+padding:30px;
+border-radius:20px;
+background:#111827;
+color:white;
+max-width:800px;
+margin:auto;
+text-align:center;
+">
+
+<h1>${titolo}</h1>
+
+<div>${frase}</div>
+
+</div>
+
+`;
+}
+
+function genera(){
+
+  const card = buildCardHTML();
+
+  document.getElementById(
+    "previewHost"
+  ).innerHTML = card;
+
+  document.getElementById(
+    "codeBox"
+  ).textContent = card;
+}

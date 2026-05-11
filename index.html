@@ -367,6 +367,7 @@ nasce la notte dei sogni.</textarea>
 
 }
 </style>
+
 <script>
 
 const urlParams =
@@ -386,7 +387,28 @@ if(sharedCard){
 
 }
 
+const cardsDatabase = {
+
+  temeria: {
+
+    titolo:
+    "Temeria Live",
+
+    frase:
+    "La prima card dinamica interplanetaria 💋",
+
+    gif:
+    "https://media.tenor.com/2roX3uxz_68AAAAC/cat-space.gif",
+
+    youtube:
+    "pa4mTtiy4Lw"
+
+  }
+
+};
+
 </script>
+
 <script src="js/utils.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/theme.js"></script>
@@ -394,5 +416,45 @@ if(sharedCard){
 <script src="js/generator.js"></script>
 <script src="js/update-system.js"></script>
 <script src="js/app.js"></script>
+
+<script>
+
+window.addEventListener("load", ()=>{
+
+  if(
+    sharedCard &&
+    cardsDatabase[sharedCard]
+  ){
+
+    const card =
+    cardsDatabase[sharedCard];
+
+    document.getElementById(
+      "titolo"
+    ).value = card.titolo;
+
+    document.getElementById(
+      "frase"
+    ).value = card.frase;
+
+    document.getElementById(
+      "gifurl"
+    ).value = card.gif;
+
+    document.getElementById(
+      "ytid_auto"
+    ).value = card.youtube;
+
+    document.getElementById(
+      "socialExport"
+    ).value = "whatsapp";
+
+    genera();
+
+  }
+
+});
+
+</script>
 </body>
 </html>

@@ -27,11 +27,16 @@ function buildCardHTML(){
     document.getElementById("videourl").value;
 
   const socialMode =
-    document.getElementById(
-      "socialExport"
-    )?.value || "normal";
+document.getElementById(
+  "socialExport"
+)?.value || "normal";
 
-  let mediaHTML = "";
+console.log(
+  "SOCIAL MODE:",
+  socialMode
+);
+
+let mediaHTML = "";
 /* =========================
    SOCIAL BUTTONS
 ========================= */
@@ -493,7 +498,7 @@ left:-9999px;
 top:-9999px;
 width:1px;
 height:1px;
-overflow:hidden;
+overflow:visible;
 opacity:0;
 pointer-events:none;
 ">
@@ -550,7 +555,7 @@ margin:auto;
 
 text-align:${textAlign};
 
-overflow:hidden;
+overflow:visible;
 
 box-shadow:
 0 0 40px rgba(0,0,0,.35);
@@ -651,7 +656,7 @@ width:420px;
 z-index:999999;
 
 border-radius:32px;
-overflow:hidden;
+overflow:visible;
 
 background:
 linear-gradient(
@@ -681,7 +686,7 @@ preview.innerHTML = `
 position:relative;
 width:100%;
 aspect-ratio:16/9;
-overflow:hidden;
+overflow:visible;
 border-radius:28px;
 background:#000;
 ">

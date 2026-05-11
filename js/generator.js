@@ -38,9 +38,14 @@ function buildCardHTML(){
 
 let socialButtons = "";
 
-if(
-  socialMode === "youtube"
-){
+const currentURL =
+ 'https://alexcaos75.github.io/Temeria-Media-Suite/';
+
+/* =========================
+   YOUTUBE
+========================= */
+
+if(socialMode === "youtube"){
 
   socialButtons = `
 
@@ -118,6 +123,218 @@ font-size:18px;
 </div>
 
 `;
+}
+
+/* =========================
+   INSTAGRAM
+========================= */
+
+if(socialMode === "instagram"){
+
+  socialButtons = `
+
+<div style="
+margin-top:25px;
+text-align:center;
+">
+
+<button
+onclick="
+navigator.clipboard.writeText(
+currentURL
+)
+"
+style="
+padding:16px 34px;
+
+border:none;
+cursor:pointer;
+
+border-radius:999px;
+
+background:
+linear-gradient(
+90deg,
+#ff0080,
+#ff5f6d,
+#ffc371
+);
+
+color:white;
+
+font-size:18px;
+font-weight:bold;
+
+box-shadow:
+0 0 35px rgba(255,0,120,.35);
+"
+>
+
+📸 COPIA LINK INSTAGRAM
+
+</button>
+
+</div>
+
+`;
+}
+
+/* =========================
+   TIKTOK
+========================= */
+
+if(socialMode === "tiktok"){
+
+  socialButtons = `
+
+<div style="
+margin-top:25px;
+text-align:center;
+">
+
+<button
+onclick="
+navigator.clipboard.writeText(
+currentURL
+)
+"
+style="
+padding:16px 34px;
+
+border:none;
+cursor:pointer;
+
+border-radius:999px;
+
+background:
+linear-gradient(
+90deg,
+#00f2ff,
+#ff0050
+);
+
+color:white;
+
+font-size:18px;
+font-weight:bold;
+
+box-shadow:
+0 0 35px rgba(0,255,255,.28);
+"
+>
+
+🎵 COPIA LINK TIKTOK
+
+</button>
+
+</div>
+
+`;
+}
+
+/* =========================
+   FACEBOOK
+========================= */
+
+if(socialMode === "facebook"){
+
+  socialButtons = `
+
+<div style="
+margin-top:25px;
+text-align:center;
+">
+
+<button
+onclick="
+navigator.clipboard.writeText(
+currentURL
+)
+"
+style="
+padding:16px 34px;
+
+border:none;
+cursor:pointer;
+
+border-radius:999px;
+
+background:
+linear-gradient(
+90deg,
+#1877f2,
+#4e9cff
+);
+
+color:white;
+
+font-size:18px;
+font-weight:bold;
+
+box-shadow:
+0 0 35px rgba(24,119,242,.28);
+"
+>
+
+📘 COPIA LINK FACEBOOK
+
+</button>
+
+</div>
+
+`;
+}
+
+/* =========================
+   WHATSAPP
+========================= */
+
+if(socialMode === "whatsapp"){
+
+  socialButtons = `
+
+<div style="
+margin-top:25px;
+text-align:center;
+">
+
+<a
+href="https://wa.me/?text=https://alexcaos75.github.io/Temeria-Media-Suite/"
+
+target="_blank"
+style="
+display:inline-block;
+
+padding:16px 34px;
+
+border-radius:999px;
+
+background:
+linear-gradient(
+90deg,
+#25d366,
+#4bf58a
+);
+
+color:white;
+text-decoration:none;
+
+font-size:18px;
+font-weight:bold;
+
+box-shadow:
+0 0 35px rgba(37,211,102,.28);
+"
+>
+
+💬 CONDIVIDI WHATSAPP
+
+</a>
+
+</div>
+
+`;
+
 }
 
   /* =========================
@@ -373,7 +590,9 @@ ${gifHTML}
 
 ${mediaHTML}
 
+
 ${socialButtons}
+
 
 </div>
 

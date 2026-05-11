@@ -367,7 +367,26 @@ nasce la notte dei sogni.</textarea>
 
 }
 </style>
+<script>
 
+const urlParams =
+new URLSearchParams(
+window.location.search
+);
+
+const sharedCard =
+urlParams.get("card");
+
+if(sharedCard){
+
+  console.log(
+    "CARD DA CARICARE:",
+    sharedCard
+  );
+
+}
+
+</script>
 <script src="js/utils.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/theme.js"></script>

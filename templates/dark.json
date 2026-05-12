@@ -1,0 +1,8 @@
+{
+"name": "Dark",
+"background": "#050505",
+"textColor": "#ffffff",
+"accent": "#ff0000",
+"font": "Arial",
+"shadow": "0 0 25px rgba(255,0,0,0.25)"
+}

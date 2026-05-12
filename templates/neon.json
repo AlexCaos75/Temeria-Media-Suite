@@ -1,0 +1,8 @@
+{
+"name": "Neon",
+"background": "#001018",
+"textColor": "#00ffee",
+"accent": "#00ffee",
+"font": "Orbitron",
+"shadow": "0 0 40px rgba(0,255,238,0.55)"
+}

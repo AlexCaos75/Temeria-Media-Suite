@@ -1,0 +1,9 @@
+{
+  "name": "Fantasy",
+  "background": "#1a102b",
+  "textColor": "#ffffff",
+  "accent": "#c084fc",
+  "font": "Trebuchet MS",
+  "borderRadius": "20px",
+  "shadow": "0 0 25px rgba(192,132,252,0.5)"
+}

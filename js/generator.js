@@ -783,38 +783,64 @@ function createCard(data, template) {
 
 }
 
+const themeSelect =
+document.getElementById("themePreset");
+
 const selectedTemplate =
-document.getElementById(
-"themePreset"
-).value;
+themeSelect?.value || "fantasy";
 
+console.log(
+  "TEMPLATE SELEZIONATO:",
+  selectedTemplate
+);
 
-loadTemplate(selectedTemplate)
+if(THEME_PRESETS[selectedTemplate]){
 
-.then(data => {
+  loadTemplate(selectedTemplate)
 
-  console.log(
-    "TEMPLATE CARICATO:",
-    data
+  .then(data => {
+
+    console.log(
+      "TEMPLATE CARICATO:",
+      data
+    );
+
+    document.body.style.background =
+    data.background;
+
+    document.body.style.color =
+    data.textColor;
+
+    document.body.style.fontFamily =
+    data.font;
+
+    const preview =
+    document.getElementById("previewHost");
+
+    if(preview){
+
+      preview.style.boxShadow =
+      data.shadow;
+
+    }
+
+  })
+
+  .catch(err => {
+
+    console.warn(
+      "Template non trovato:",
+      selectedTemplate,
+      err
+    );
+
+  });
+
+}else{
+
+  console.warn(
+    "Preset inesistente:",
+    selectedTemplate
   );
 
-  document.body.style.background =
-  data.background;
-
-  document.body.style.color =
-  data.textColor;
-
-  document.body.style.fontFamily =
-  data.font;
-
-  const preview =
-  document.getElementById("previewHost");
-
-  if(preview){
-
-    preview.style.boxShadow =
-    data.shadow;
-
-  }
-
-});
+}

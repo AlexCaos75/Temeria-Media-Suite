@@ -551,7 +551,10 @@ linear-gradient(
 color:white;
 
 max-width:${cardWidth};
+width:92%;
 margin:auto;
+box-sizing:border-box;
+
 
 text-align:${textAlign};
 

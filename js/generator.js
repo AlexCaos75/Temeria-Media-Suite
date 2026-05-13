@@ -652,8 +652,9 @@ margin-right:auto;
 
 margin-top:-28px;
 
-max-width:420px;
-width:100%;
+max-width:340px;
+width:92%;
+
 
 
 z-index:999999;

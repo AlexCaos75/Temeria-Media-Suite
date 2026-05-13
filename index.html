@@ -8,6 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/cards.css">
+<link rel="stylesheet" href="css/animations.css">
+
 </head>
 
 <body>
@@ -155,6 +158,9 @@ nasce la notte dei sogni.</textarea>
     <button onclick="salvaCard()">Scarica Card HTML</button>
     <button onclick="salvaGenerator()">Scarica questo Generatore</button>
     <button class="danger" onclick="resetCampi()">Reset</button>
+    <button onclick="exportPublicCard()">
+  Esporta Card Pubblica
+</button>
   </div>
 
   <!-- THEME LAB -->
@@ -168,13 +174,17 @@ nasce la notte dei sogni.</textarea>
         <div>
           <label>Preset Palette</label>
           <select id="themePreset">
-            <option value="cyber_aurora">Cyber Aurora (Cyan/Violet)</option>
-            <option value="gold_neon">Gold Neon (Teal/Gold)</option>
-            <option value="crimson_nebula">Crimson Nebula (Magenta/Cyan)</option>
-            <option value="ice_quantum">Ice Quantum (Glaciale/Tech)</option>
-            <option value="obsidian_lux">Obsidian Lux (Dark/Luxury)</option>
-            <option value="custom">Custom (manuale)</option>
-          </select>
+
+  <option value="fantasy">Fantasy</option>
+
+  <option value="dark">Dark</option>
+
+  <option value="modern">Modern</option>
+
+  <option value="neon">Neon</option>
+
+</select>
+
 
           <div class="rowBtns" style="margin-top:10px;">
             <button type="button" onclick="randomTheme()">Random Avanguardia</button>

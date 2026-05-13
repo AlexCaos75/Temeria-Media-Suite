@@ -648,10 +648,13 @@ preview.style.cssText = `
 position:relative;
 
 margin-left:auto;
-margin-right:0px;
+margin-right:auto;
+
 margin-top:-28px;
 
-width:420px;
+max-width:420px;
+width:100%;
+
 
 z-index:999999;
 

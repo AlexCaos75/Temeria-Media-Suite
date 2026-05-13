@@ -778,6 +778,66 @@ inset 0 1px 0 rgba(255,255,255,.05);
 `;
 
 document.querySelectorAll(".panel")[1]
-  .querySelector(".panelBody")
-  .appendChild(preview);
+.querySelector(".panelBody")
+.appendChild(preview);
+}
+
+function exportPublicCard(){
+
+const cardHTML = buildCardHTML();
+
+const titolo =
+document.getElementById("titolo")
+.value
+.trim()
+.toLowerCase()
+.replace(/[^a-z0-9]+/g,"-") || "temeria-card";
+
+const finalHTML = `
+
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${titolo}</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  padding:30px;
+  background:#070a12;
+  font-family:Orbitron,sans-serif;
+}
+</style>
+
+</head>
+<body>
+
+${cardHTML}
+
+</body>
+</html>
+`;
+
+const blob = new Blob(
+[finalHTML],
+{type:"text/html"}
+);
+
+const a = document.createElement("a");
+
+a.href = URL.createObjectURL(blob);
+
+a.download = `${titolo}.html`;
+
+document.body.appendChild(a);
+
+a.click();
+
+document.body.removeChild(a);
+
 }

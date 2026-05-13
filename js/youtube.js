@@ -80,3 +80,33 @@ BUTTON: ${btnID}`
   );
 
 }
+function copyEmbedCode(){
+
+const ytid =
+document.getElementById(
+"ytid_auto"
+).value;
+
+if(!ytid){
+
+
+alert("Nessun ID YouTube 😘");
+return;
+
+}
+
+const embed = `
+
+<iframe
+width="560"
+height="315"
+src="https://www.youtube.com/embed/${ytid}"
+frameborder="0"
+allowfullscreen>
+</iframe>`;
+
+navigator.clipboard.writeText(embed);
+
+alert("Embed copiato 💋");
+
+}

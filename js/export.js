@@ -1,7 +1,3 @@
-/* =========================
-   OG META BUILDER
-========================= */
-
 function buildOGMeta({
   title,
   description,
@@ -25,19 +21,17 @@ function buildOGMeta({
 
 function exportPublicCard() {
 
-  const cardHTML =
-    buildCardHTML();
+  const cardHTML = buildCardHTML();
 
   const rawTitle =
     getVal("titolo").trim()
     || "temeria-card";
 
-  const fileName =
-    rawTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      || "temeria-card";
+  const fileName = rawTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "temeria-card";
 
   const finalHTML = `
 <!DOCTYPE html>
@@ -47,10 +41,8 @@ function exportPublicCard() {
 
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>
 ${escapeHTML(rawTitle)}
@@ -65,8 +57,7 @@ ${buildOGMeta({
 
 <link
 href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap"
-rel="stylesheet"
->
+rel="stylesheet">
 
 <style>
 
@@ -77,8 +68,7 @@ body{
   font-family:Orbitron,sans-serif;
 }
 
-button,
-a{
+button,a{
   font-family:Orbitron,sans-serif;
 }
 
@@ -101,93 +91,18 @@ ${cardHTML}
   );
 
 }
-
 /* =========================
-   DOWNLOAD GENERATOR
-========================= */
-
-function downloadGeneratorHTML() {
-
-  const html =
-    document.documentElement.outerHTML;
-
-  downloadTextFile(
-    "temeria-media-forge-generator.html",
-    html,
-    "text/html"
-  );
-
-}
-
-/* =========================
-   DOWNLOAD TEXT FILE
-========================= */
-
-function downloadTextFile(
-  filename,
-  content,
-  type = "text/plain"
-) {
-
-  const blob =
-    new Blob(
-      [content],
-      { type }
-    );
-
-  const a =
-    document.createElement("a");
-
-  a.href =
-    URL.createObjectURL(blob);
-
-  a.download =
-    filename;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  document.body.removeChild(a);
-
-  URL.revokeObjectURL(a.href);
-
-}
-
-/* =========================
-   COPY GENERATED CODE
-========================= */
-
-function copiaCodice() {
-
-  const codeBox =
-    document.getElementById("codeBox");
-
-  if (!codeBox)
-    return;
-
-  safeCopyText(
-    codeBox.textContent || ""
-  );
-
-}
-
-/* =========================
-   SAVE CARD
+   COMPAT HTML ATTUALE
 ========================= */
 
 function salvaCard() {
-
   exportPublicCard();
-
 }
 
-/* =========================
-   SAVE GENERATOR
-========================= */
-
 function salvaGenerator() {
-
   downloadGeneratorHTML();
+}
 
+function resetCampi() {
+  resetForge();
 }

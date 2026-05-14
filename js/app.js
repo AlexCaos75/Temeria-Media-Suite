@@ -1,147 +1,114 @@
-/* =========================
-   APP INIT
-========================= */
+function buildOGMeta({
+  title,
+  description,
+  image,
+  url
+}) {
 
-let autoGenerateEnabled = true;
-
-/* =========================
-   DEBOUNCE
-========================= */
-
-function debounce(fn, delay = 300) {
-
-  let timer;
-
-  return function(...args) {
-
-    clearTimeout(timer);
-
-    timer = setTimeout(() => {
-
-      fn.apply(this, args);
-
-    }, delay);
-
-  };
+  return `
+<meta property="og:title" content="${escapeHTML(title)}">
+<meta property="og:description" content="${escapeHTML(description)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${image}">
+`;
 
 }
 
 /* =========================
-   AUTO GENERATE
+   EXPORT PUBLIC CARD
 ========================= */
 
-const autoG = debounce(() => {
+function exportPublicCard() {
 
-  if (!autoGenerateEnabled)
-    return;
+  const cardHTML = buildCardHTML();
 
-  if (typeof genera === "function") {
+  const rawTitle =
+    getVal("titolo").trim()
+    || "temeria-card";
 
-    genera();
+  const fileName = rawTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "temeria-card";
 
-  }
+  const finalHTML = `
+<!DOCTYPE html>
+<html lang="it">
 
-}, 300);
+<head>
 
-/* =========================
-   KPI STATUS
-========================= */
+<meta charset="UTF-8">
 
-function updateAutoKPI() {
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-  const kpi =
-    document.getElementById("kpiAuto");
+<title>
+${escapeHTML(rawTitle)}
+</title>
 
-  if (!kpi)
-    return;
+${buildOGMeta({
+  title: rawTitle,
+  description: "Card creata con Temeria Media Forge",
+  image: `${getPublicBaseURL()}assets/og/temeria-og.jpg`,
+  url: getPublicCardURL()
+})}
 
-  kpi.textContent =
-    autoGenerateEnabled
-      ? "Auto-genera: ON"
-      : "Auto-genera: OFF";
+<link
+href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap"
+rel="stylesheet">
 
+<style>
+
+body{
+  margin:0;
+  padding:30px;
+  background:#070a12;
+  font-family:Orbitron,sans-serif;
 }
 
-/* =========================
-   ENABLE / DISABLE
-========================= */
-
-function setAutoGenerate(enabled) {
-
-  autoGenerateEnabled =
-    !!enabled;
-
-  updateAutoKPI();
-
-  if (
-    autoGenerateEnabled &&
-    typeof genera === "function"
-  ) {
-
-    genera();
-
-  }
-
+button,a{
+  font-family:Orbitron,sans-serif;
 }
 
-/* =========================
-   TOGGLE
-========================= */
+</style>
 
-function toggleAutoGenerate() {
+</head>
 
-  setAutoGenerate(
-    !autoGenerateEnabled
+<body>
+
+${cardHTML}
+
+</body>
+</html>
+`;
+
+  downloadTextFile(
+    `${fileName}.html`,
+    finalHTML,
+    "text/html"
   );
 
 }
-
 /* =========================
-   BIND INPUTS
+   COMPAT HTML ATTUALE
 ========================= */
 
-function bindAutoGenerate() {
-
-  const fields =
-    document.querySelectorAll(
-      "input, textarea, select"
-    );
-
-  fields.forEach(el => {
-
-    el.addEventListener(
-      "input",
-      autoG
-    );
-
-    el.addEventListener(
-      "change",
-      autoG
-    );
-
-  });
-
+function salvaCard() {
+  exportPublicCard();
 }
 
-/* =========================
-   INIT
-========================= */
+function salvaGenerator() {
+  downloadGeneratorHTML();
+}
 
-window.addEventListener(
-  "load",
-  () => {
+function resetCampi() {
+  resetForge();
+}
+function copiaCodice() {
+  const codeBox = document.getElementById("codeBox");
+  if (!codeBox) return;
 
-    bindAutoGenerate();
-
-    updateAutoKPI();
-
-    if (
-      typeof genera === "function"
-    ) {
-
-      genera();
-
-    }
-
-  }
-);
+  safeCopyText(codeBox.textContent || "");
+}

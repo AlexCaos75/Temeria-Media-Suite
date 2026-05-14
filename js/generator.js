@@ -662,7 +662,7 @@ width="1"
 height="1"
 allow="autoplay; encrypted-media"
 frameborder="0"
-src="https://www.youtube.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
+src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidAuto)}"
 </iframe>
 </div>
 `;

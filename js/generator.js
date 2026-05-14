@@ -160,20 +160,55 @@ function nl2brSafe(str) {
 
 function safeCopyText(text) {
 
-  navigator.clipboard.writeText(text)
-    .then(() => {
+  if (navigator.clipboard) {
 
-      console.log("COPIED");
+    navigator.clipboard.writeText(text)
+      .then(() => {
 
-    })
-    .catch(err => {
+        console.log("COPIED");
 
-      console.error(
-        "COPY ERROR",
-        err
-      );
+      })
+      .catch(() => {
 
-    });
+        fallbackCopyText(text);
+
+      });
+
+  } else {
+
+    fallbackCopyText(text);
+
+  }
+
+}
+
+function fallbackCopyText(text) {
+
+  const textarea =
+    document.createElement("textarea");
+
+  textarea.value = text;
+
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+
+  document.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.select();
+
+  try {
+
+    document.execCommand("copy");
+    console.log("FALLBACK COPIED");
+
+  } catch(err) {
+
+    console.error("COPY FAILED", err);
+
+  }
+
+  document.body.removeChild(textarea);
 
 }
 /* =========================
@@ -558,6 +593,8 @@ if (gif && showImages) {
   const imgTag = `
 <img
 src="${escapeAttr(gif)}"
+loading="lazy"
+decoding="async"
 alt=""
 style="
 width:100%;
@@ -583,6 +620,8 @@ object-fit:cover;
 <video
 src="${escapeAttr(video)}"
 controls
+playsinline
+preload="metadata"
 style="
 width:100%;
 margin-top:25px;
@@ -621,9 +660,9 @@ pointer-events:none;
 <iframe
 width="1"
 height="1"
-allow="autoplay"
+allow="autoplay; encrypted-media"
 frameborder="0"
-src="https://www.youtube.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
+src="https://www.youtube.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
 </iframe>
 </div>
 `;
@@ -728,11 +767,10 @@ pointer-events:none;
 id="legacyYTPlayer"
 width="1"
 height="1"
-allow="autoplay"
+allow="autoplay; encrypted-media"
 frameborder="0"
-src="https://www.youtube.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
+src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
 </iframe>
-
 </div>
 `;
   }
@@ -762,12 +800,10 @@ pointer-events:none;
 id="legacyYTPlayerButtons"
 width="1"
 height="1"
-allow="autoplay"
+allow="autoplay; encrypted-media"
 frameborder="0"
-src="https://www.youtube.com/embed/${encodeURIComponent(ytidBtn)}?enablejsapi=1&loop=1&playlist=${encodeURIComponent(ytidBtn)}">
+src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytidBtn)}?enablejsapi=1&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidBtn)}">
 </iframe>
-
-</div>
 
 <div style="
 margin-top:25px;
@@ -954,6 +990,7 @@ if (socialMode === "youtube") {
 <a
 href="${ytURL}"
 target="_blank"
+rel="noopener noreferrer"
 style="
 display:inline-block;
 padding:16px 34px;

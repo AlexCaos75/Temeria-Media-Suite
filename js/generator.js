@@ -805,6 +805,7 @@ frameborder="0"
 src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytidBtn)}?enablejsapi=1&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidBtn)}">
 </iframe>
 
+</div>
 <div style="
 margin-top:25px;
 display:flex;

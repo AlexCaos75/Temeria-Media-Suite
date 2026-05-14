@@ -1,455 +1,308 @@
-
 /* =========================
    GENERATOR
 ========================= */
 
 let gifDataURL = "";
 
-function buildCardHTML(){
+/* =========================
+   SAFE HELPERS
+========================= */
 
-  const titolo =
-    escapeHTML(
-      document.getElementById("titolo").value
-    );
+function getVal(id, fallback = "") {
+  return document.getElementById(id)?.value ?? fallback;
+}
 
-  const frase =
-    nl2brSafe(
-      document.getElementById("frase").value
-    );
+function escapeAttr(str) {
+  return String(str || "").replace(/"/g, "&quot;");
+}
 
-  const gif =
-    document.getElementById("gifurl").value;
+function getOutputMode() {
+  return getVal("outputMode", "social_clean");
+}
 
-  const ytid =
-    document.getElementById("ytid_auto").value;
+function getPublicBaseURL() {
+  return "https://alexcaos75.github.io/Temeria-Media-Suite/";
+}
 
-  const video =
-    document.getElementById("videourl").value;
+function getPublicCardURL() {
+  return "https://alexcaos75.github.io/Temeria-Media-Suite/cards/temeria-card.html";
+}
 
-  const socialMode =
-document.getElementById(
-  "socialExport"
-)?.value || "normal";
+function getCardSizeSettings() {
+  const size = getVal("cardSize", "medium");
 
-console.log(
-  "SOCIAL MODE:",
-  socialMode
-);
+  const presets = {
+    small: {
+      width: "520px",
+      padding: "24px",
+      radius: "22px",
+      titleSize: "28px",
+      textSize: "18px"
+    },
+    medium: {
+      width: "760px",
+      padding: "30px",
+      radius: "26px",
+      titleSize: "34px",
+      textSize: "22px"
+    },
+    large: {
+      width: "980px",
+      padding: "36px",
+      radius: "30px",
+      titleSize: "42px",
+      textSize: "25px"
+    },
+    ultra: {
+      width: "1180px",
+      padding: "42px",
+      radius: "34px",
+      titleSize: "46px",
+      textSize: "26px"
+    },
+    square: {
+      width: "700px",
+      padding: "34px",
+      radius: "30px",
+      titleSize: "36px",
+      textSize: "22px",
+      minHeight: "700px"
+    },
+    story: {
+      width: "430px",
+      padding: "25px",
+      radius: "28px",
+      titleSize: "30px",
+      textSize: "20px",
+      minHeight: "760px"
+    }
+  };
+
+  return presets[size] || presets.medium;
+}
+
+/* =========================
+   BUILD CARD
+========================= */
+
+function buildCardHTML() {
+  const theme = typeof getThemeFromUI === "function"
+    ? getThemeFromUI()
+    : {
+        bg: "#070a12",
+        txt: "#ffffff",
+        accent: "#00f6ff",
+        accent2: "#111827",
+        accent3: "#b06cff",
+        accent4: "#6cff9f",
+        glowPower: 55
+      };
+
+  const size = getCardSizeSettings();
+  const outputMode = getOutputMode();
+
+const titolo = escapeHTML(getVal("titolo"));
+const frase = nl2brSafe(getVal("frase"));
+const fraseFinale = nl2brSafe(getVal("frase2"));
+const firma = escapeHTML(getVal("firma"));
+const emoticons = escapeHTML(getVal("emoticons"));
+
+const gif = getVal("gifurl").trim();
+const video = getVal("videourl").trim();
+
+const audioMode = getVal("audioMode", "yt_auto");
+const ytidAuto = getVal("ytid_auto").trim();
+const ytidBtn = getVal("ytid_btn").trim();
+const mp3url = getVal("mp3url").trim();
+
+const socialMode = getVal("socialExport", "normal");
+const publicCardURL = getPublicCardURL();
+
+const cardStyle = getVal("cardStyle", "holo");
+const textStyle = getVal("textStyle", "normal");
+
+let cardBackground = `linear-gradient(180deg,${theme.bg},${theme.accent2})`;
+let cardTextColor = theme.txt;
+let titleColor = theme.accent;
+let mainTextColor = theme.txt;
+
+let titleTextShadow = `
+  0 0 20px ${theme.accent},
+  0 0 ${theme.glowPower}px ${theme.accent3}
+`;
+
+let mainTextShadow = "none";
+let mainFontStyle = "normal";
+let mainLetterSpacing = "normal";
 
 let mediaHTML = "";
-/* =========================
-   SOCIAL BUTTONS
-========================= */
-
+let gifHTML = "";
+let audioHTML = "";
 let socialButtons = "";
+let extraStyle = "";
 
-const currentURL =
- 'https://alexcaos75.github.io/Temeria-Media-Suite/';
+let cardWidth = size.width;
+let cardRadius = size.radius;
+let cardPadding = size.padding;
+let textAlign = "center";
+let minHeight = size.minHeight || "auto";
 
-/* =========================
-   YOUTUBE
-========================= */
-
-if(socialMode === "youtube"){
-
-  socialButtons = `
-
-<div style="
-margin-top:25px;
-
-display:flex;
-gap:15px;
-justify-content:center;
-flex-wrap:wrap;
-">
-
-<a
-href="https://youtube.com/watch?v=${ytid}"
-target="_blank"
-style="
-padding:16px 28px;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#ff0000,
-#ff3b3b
-);
-
-color:white;
-text-decoration:none;
-
-font-weight:bold;
-font-size:18px;
-
-box-shadow:
-0 0 25px rgba(255,0,0,.35);
-"
->
-
-▶ APRI YOUTUBE
-
-</a>
-
-<button
-onclick="
-navigator.clipboard.writeText(
-'https://youtube.com/watch?v=${ytid}'
-)
-"
-style="
-padding:16px 28px;
-
-border:none;
-cursor:pointer;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#111827,
-#1f2937
-);
-
-color:white;
-
-font-weight:bold;
-font-size:18px;
-"
->
-
-📋 COPIA LINK
-
-</button>
-
-</div>
-
-`;
-}
+const showImages = outputMode !== "minimal" && outputMode !== "music_focus";
+const showVideo = outputMode !== "minimal" && outputMode !== "music_focus" && outputMode !== "social_clean";
+const showAudio = outputMode !== "minimal" && outputMode !== "image_focus" && outputMode !== "video_focus";
 
 /* =========================
-   INSTAGRAM
+   TEXT STYLE
 ========================= */
 
-if(socialMode === "instagram"){
-
-  socialButtons = `
-
-<div style="
-margin-top:25px;
-text-align:center;
-">
-
-<button
-onclick="
-navigator.clipboard.writeText(
-currentURL
-)
-"
-style="
-padding:16px 34px;
-
-border:none;
-cursor:pointer;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#ff0080,
-#ff5f6d,
-#ffc371
-);
-
-color:white;
-
-font-size:18px;
-font-weight:bold;
-
-box-shadow:
-0 0 35px rgba(255,0,120,.35);
-"
->
-
-📸 COPIA LINK INSTAGRAM
-
-</button>
-
-</div>
-
-`;
+if (textStyle === "dream") {
+  mainFontStyle = "italic";
+  mainLetterSpacing = "1px";
+  mainTextShadow = `0 0 18px ${theme.accent4}`;
 }
 
+if (textStyle === "neon") {
+  titleTextShadow = `
+    0 0 12px ${theme.accent},
+    0 0 30px ${theme.accent3},
+    0 0 60px ${theme.accent4}
+  `;
+
+  mainTextShadow = `
+    0 0 12px ${theme.accent4},
+    0 0 26px ${theme.accent3}
+  `;
+
+  mainLetterSpacing = "1.5px";
+}
+ /* =========================
+   SOCIAL STYLE
+========================= */
+
+if (socialMode === "whatsapp") {
+  cardWidth = "650px";
+  extraStyle = `
+    border:1px solid rgba(37,211,102,.22);
+    box-shadow:
+    0 0 40px rgba(37,211,102,.12),
+    0 0 80px rgba(37,211,102,.08);
+  `;
+}
+
+if (socialMode === "facebook") {
+  cardWidth = "760px";
+  extraStyle = `
+    border:1px solid rgba(24,119,242,.20);
+    box-shadow:
+    0 0 45px rgba(24,119,242,.14),
+    0 0 90px rgba(24,119,242,.08);
+  `;
+}
+
+if (socialMode === "instagram") {
+  cardWidth = "430px";
+  cardPadding = "25px";
+  minHeight = "760px";
+  extraStyle = `
+    background:linear-gradient(180deg,${theme.accent3},${theme.accent2});
+    box-shadow:
+    0 0 60px rgba(255,0,180,.18),
+    0 0 120px rgba(180,0,255,.14);
+  `;
+}
+
+if (socialMode === "youtube") {
+  cardWidth = "980px";
+  extraStyle = `
+    border:1px solid rgba(255,0,0,.15);
+    box-shadow:
+    0 0 60px rgba(255,0,0,.18),
+    0 0 140px rgba(255,0,0,.10);
+  `;
+}
+
+if (socialMode === "tiktok") {
+  cardWidth = "420px";
+  minHeight = "760px";
+  extraStyle = `
+    background:linear-gradient(180deg,#000,${theme.accent2});
+    border:1px solid rgba(0,255,255,.12);
+    box-shadow:
+    0 0 50px rgba(0,255,255,.12),
+    0 0 90px rgba(255,0,120,.12);
+  `;
+}
 /* =========================
-   TIKTOK
+   CARD STYLE
 ========================= */
 
-if(socialMode === "tiktok"){
+if (cardStyle === "social_white") {
+  cardBackground = "#ffffff";
+  cardTextColor = "#111827";
+  titleColor = "#111827";
+  mainTextColor = "#1f2937";
 
-  socialButtons = `
-
-<div style="
-margin-top:25px;
-text-align:center;
-">
-
-<button
-onclick="
-navigator.clipboard.writeText(
-currentURL
-)
-"
-style="
-padding:16px 34px;
-
-border:none;
-cursor:pointer;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#00f2ff,
-#ff0050
-);
-
-color:white;
-
-font-size:18px;
-font-weight:bold;
-
-box-shadow:
-0 0 35px rgba(0,255,255,.28);
-"
->
-
-🎵 COPIA LINK TIKTOK
-
-</button>
-
-</div>
-
-`;
+  extraStyle += `
+    border:1px solid rgba(0,0,0,.08);
+    box-shadow:0 22px 70px rgba(0,0,0,.18);
+  `;
 }
 
+if (cardStyle === "minimal") {
+  cardBackground = "linear-gradient(180deg,#ffffff,#f8fafc)";
+  cardTextColor = "#111827";
+  titleColor = "#111827";
+  mainTextColor = "#334155";
+
+  extraStyle += `
+    border:1px solid rgba(0,0,0,.08);
+    box-shadow:0 18px 50px rgba(0,0,0,.12);
+  `;
+}
+
+if (cardStyle === "glass") {
+  cardBackground = "rgba(255,255,255,.08)";
+
+  extraStyle += `
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.18);
+  `;
+}
+
+if (cardStyle === "classic") {
+  extraStyle += `
+    border:1px solid ${theme.accent};
+  `;
+}
+
+if (cardStyle === "nebula") {
+  cardBackground = `
+    radial-gradient(circle at top left,${theme.accent3},transparent 35%),
+    radial-gradient(circle at bottom right,${theme.accent4},transparent 35%),
+    linear-gradient(180deg,${theme.bg},${theme.accent2})
+  `;
+}
+
+if (cardStyle === "holo") {
+  cardBackground = `
+    linear-gradient(
+      135deg,
+      ${theme.bg},
+      ${theme.accent2},
+      ${theme.accent3}
+    )
+  `;
+}
 /* =========================
-   FACEBOOK
+   IMAGE / GIF
 ========================= */
 
-if(socialMode === "facebook"){
-
-  socialButtons = `
-
-<div style="
-margin-top:25px;
-text-align:center;
-">
-
-<button
-onclick="
-navigator.clipboard.writeText(
-currentURL
-)
-"
-style="
-padding:16px 34px;
-
-border:none;
-cursor:pointer;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#1877f2,
-#4e9cff
-);
-
-color:white;
-
-font-size:18px;
-font-weight:bold;
-
-box-shadow:
-0 0 35px rgba(24,119,242,.28);
-"
->
-
-📘 COPIA LINK FACEBOOK
-
-</button>
-
-</div>
-
-`;
-}
-
-/* =========================
-   WHATSAPP
-========================= */
-
-if(socialMode === "whatsapp"){
-
-  socialButtons = `
-
-<div style="
-margin-top:25px;
-text-align:center;
-">
-
-<a
-href="https://wa.me/?text=https://alexcaos75.github.io/Temeria-Media-Suite/?card=temeria"
-
-target="_blank"
-style="
-display:inline-block;
-
-padding:16px 34px;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#25d366,
-#4bf58a
-);
-
-color:white;
-text-decoration:none;
-
-font-size:18px;
-font-weight:bold;
-
-box-shadow:
-0 0 35px rgba(37,211,102,.28);
-"
->
-
-💬 CONDIVIDI WHATSAPP
-
-</a>
-
-</div>
-
-`;
-
-}
-
-  /* =========================
-     SOCIAL MODES
-  ========================= */
-
-  let cardWidth = "900px";
-  let cardRadius = "26px";
-  let cardPadding = "30px";
-  let textAlign = "center";
-  let extraStyle = "";
-
-  if(socialMode === "whatsapp"){
-
-    cardWidth = "650px";
-    cardRadius = "22px";
-
-    extraStyle = `
-      border:
-      1px solid rgba(37,211,102,.22);
-
-      box-shadow:
-      0 0 40px rgba(37,211,102,.12),
-      0 0 80px rgba(37,211,102,.08);
-    `;
-  }
-
-  if(socialMode === "facebook"){
-
-    cardWidth = "760px";
-
-    extraStyle = `
-      border:
-      1px solid rgba(24,119,242,.20);
-
-      box-shadow:
-      0 0 45px rgba(24,119,242,.14),
-      0 0 90px rgba(24,119,242,.08);
-    `;
-  }
-
-  if(socialMode === "instagram"){
-
-    cardWidth = "430px";
-    cardPadding = "25px";
-
-    extraStyle = `
-      min-height:760px;
-
-      background:
-      linear-gradient(
-      180deg,
-      #2b1055,
-      #7597de
-      );
-
-      box-shadow:
-      0 0 60px rgba(255,0,180,.18),
-      0 0 120px rgba(180,0,255,.14);
-    `;
-  }
-
-  if(socialMode === "youtube"){
-
-    cardWidth = "980px";
-
-    extraStyle = `
-      border:
-      1px solid rgba(255,0,0,.15);
-
-      box-shadow:
-      0 0 60px rgba(255,0,0,.18),
-      0 0 140px rgba(255,0,0,.10);
-    `;
-  }
-
-  if(socialMode === "tiktok"){
-
-    cardWidth = "420px";
-
-    extraStyle = `
-      min-height:760px;
-
-      background:
-      linear-gradient(
-      180deg,
-      #000,
-      #111827
-      );
-
-      border:
-      1px solid rgba(0,255,255,.12);
-
-      box-shadow:
-      0 0 50px rgba(0,255,255,.12),
-      0 0 90px rgba(255,0,120,.12);
-    `;
-  }
-
-  /* =========================
-     GIF
-  ========================= */
-
-  let gifHTML = "";
-
-  if(gif){
-
-    gifHTML = `
+if (gif && showImages) {
+  const imgLink = getVal("imglink").trim();
+  const imgTag = `
 <img
-src="${gif}"
+src="${escapeAttr(gif)}"
+alt=""
 style="
 width:100%;
 border-radius:22px;
@@ -460,17 +313,19 @@ object-fit:cover;
 "
 >
 `;
-  }
 
+  gifHTML = imgLink
+    ? `<a href="${escapeAttr(imgLink)}" target="_blank">${imgTag}</a>`
+    : imgTag;
+}
   /* =========================
      VIDEO
   ========================= */
 
-  if(video){
-
+  if (video && showVideo) {
     mediaHTML += `
 <video
-src="${video}"
+src="${escapeAttr(video)}"
 controls
 style="
 width:100%;
@@ -479,329 +334,365 @@ border-radius:22px;
 box-shadow:0 0 30px rgba(0,0,0,.35);
 display:block;
 "
->
-</video>
+></video>
 `;
   }
 
   /* =========================
-     PLAYER AUTOPLAY INVISIBILE
+     AUDIO MODES
   ========================= */
 
-  if(ytid){
-
-    mediaHTML += `
-
+  if (showAudio && audioMode === "yt_auto" && ytidAuto) {
+    audioHTML += `
 <div style="
 position:fixed;
 left:-9999px;
 top:-9999px;
 width:1px;
 height:1px;
-overflow:visible;
+overflow:hidden;
 opacity:0;
 pointer-events:none;
 ">
-
 <iframe
 width="1"
 height="1"
 allow="autoplay"
 frameborder="0"
-src="
-https://www.youtube.com/embed/${ytid}?autoplay=1&mute=0&loop=1&playlist=${ytid}
-">
+src="https://www.youtube.com/embed/${encodeURIComponent(ytidAuto)}?autoplay=1&mute=0&loop=1&playlist=${encodeURIComponent(ytidAuto)}">
 </iframe>
-
 </div>
-
 `;
   }
 
+  if (showAudio && audioMode === "yt_buttons" && ytidBtn) {
+    const ytURL = `https://youtube.com/watch?v=${encodeURIComponent(ytidBtn)}`;
+
+    audioHTML += `
+<div style="
+margin-top:25px;
+display:flex;
+gap:14px;
+justify-content:center;
+flex-wrap:wrap;
+">
+<a
+href="${ytURL}"
+target="_blank"
+style="
+padding:15px 26px;
+border-radius:999px;
+background:linear-gradient(90deg,#ff0000,#ff3b3b);
+color:white;
+text-decoration:none;
+font-weight:bold;
+font-size:17px;
+box-shadow:0 0 25px rgba(255,0,0,.35);
+"
+>
+▶ APRI MUSICA
+</a>
+
+<button
+onclick="safeCopyText('${ytURL}')"
+style="
+padding:15px 26px;
+border:none;
+cursor:pointer;
+border-radius:999px;
+background:linear-gradient(90deg,#111827,#1f2937);
+color:white;
+font-weight:bold;
+font-size:17px;
+"
+>
+📋 COPIA LINK
+</button>
+</div>
+`;
+  }
+
+  if (showAudio && audioMode === "mp3" && mp3url) {
+    audioHTML += `
+<audio
+src="${escapeAttr(mp3url)}"
+controls
+loop
+style="
+width:100%;
+margin-top:25px;
+border-radius:999px;
+"
+></audio>
+`;
+  }
+
+/* =========================
+   SOCIAL BUTTONS
+========================= */
+
+if (socialMode === "facebook") {
+  socialButtons = `
+<div style="margin-top:25px;text-align:center;">
+<button onclick="safeCopyText('${publicCardURL}')" style="
+padding:16px 34px;
+border:none;
+cursor:pointer;
+border-radius:999px;
+background:linear-gradient(90deg,#1877f2,#4e9cff);
+color:white;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 0 35px rgba(24,119,242,.28);
+">
+📘 COPIA LINK FACEBOOK
+</button>
+</div>
+`;
+}
+
+if (socialMode === "whatsapp") {
+  socialButtons = `
+<div style="margin-top:25px;text-align:center;">
+<a
+href="https://wa.me/?text=${encodeURIComponent(publicCardURL)}"
+target="_blank"
+style="
+display:inline-block;
+padding:16px 34px;
+border-radius:999px;
+background:linear-gradient(90deg,#25d366,#4bf58a);
+color:white;
+text-decoration:none;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 0 35px rgba(37,211,102,.28);
+"
+>
+💬 CONDIVIDI WHATSAPP
+</a>
+</div>
+`;
+}
+
+if (socialMode === "instagram") {
+  socialButtons = `
+<div style="margin-top:25px;text-align:center;">
+<button onclick="safeCopyText('${publicCardURL}')" style="
+padding:16px 34px;
+border:none;
+cursor:pointer;
+border-radius:999px;
+background:linear-gradient(90deg,#ff00aa,#ff6a00);
+color:white;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 0 35px rgba(255,0,170,.28);
+">
+📸 COPIA LINK INSTAGRAM
+</button>
+</div>
+`;
+}
+
+if (socialMode === "youtube") {
+  const yt = ytidBtn || ytidAuto;
+  const ytURL = yt
+    ? `https://youtube.com/watch?v=${encodeURIComponent(yt)}`
+    : "https://youtube.com";
+
+  socialButtons = `
+<div style="margin-top:25px;text-align:center;">
+<a
+href="${ytURL}"
+target="_blank"
+style="
+display:inline-block;
+padding:16px 34px;
+border-radius:999px;
+background:linear-gradient(90deg,#ff0000,#ff3b3b);
+color:white;
+text-decoration:none;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 0 35px rgba(255,0,0,.28);
+">
+▶ APRI YOUTUBE
+</a>
+</div>
+`;
+}
+
+if (socialMode === "tiktok") {
+  socialButtons = `
+<div style="margin-top:25px;text-align:center;">
+<button onclick="safeCopyText('${publicCardURL}')" style="
+padding:16px 34px;
+border:none;
+cursor:pointer;
+border-radius:999px;
+background:linear-gradient(90deg,#00f2ea,#ff0050);
+color:white;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 0 35px rgba(0,242,234,.28);
+">
+🎵 COPIA LINK TIKTOK
+</button>
+</div>
+`;
+}
+  /* =========================
+     EXTRA TEXT
+  ========================= */
+
+  const fraseFinaleHTML = fraseFinale
+    ? `
+<div style="
+margin-top:24px;
+font-size:20px;
+line-height:1.6;
+opacity:.9;
+color:${theme.accent4};
+text-shadow:0 0 18px ${theme.accent4};
+">
+${fraseFinale}
+</div>
+`
+    : "";
+
+  const emoticonsHTML = emoticons
+    ? `
+<div style="
+margin-top:20px;
+font-size:32px;
+letter-spacing:8px;
+">
+${emoticons}
+</div>
+`
+    : "";
+
+  const firmaHTML = firma
+    ? `
+<div style="
+margin-top:24px;
+font-size:18px;
+opacity:.85;
+color:${theme.accent};
+text-shadow:0 0 14px ${theme.accent};
+">
+— ${firma}
+</div>
+`
+    : "";
+
   return `
-
-<!-- WRAPPER -->
-
 <div style="
 position:relative;
-
 max-width:1200px;
-
 margin:auto;
-
 padding-top:30px;
 ">
 
-<!-- CARD -->
-
 <div style="
 position:relative;
-
 padding:${cardPadding};
-
 border-radius:${cardRadius};
-
-background:
-linear-gradient(
-180deg,
-#111827,
-#0f172a
-);
-
-color:white;
-
+background:${cardBackground};
+color:${cardTextColor};
 max-width:${cardWidth};
+min-height:${minHeight};
 width:92%;
 margin:auto;
 box-sizing:border-box;
-
-
 text-align:${textAlign};
-
 overflow:visible;
-
 box-shadow:
-0 0 40px rgba(0,0,0,.35);
-
+0 0 40px rgba(0,0,0,.35),
+0 0 ${theme.glowPower}px ${theme.accent3};
 ${extraStyle}
 ">
 
 <h1 style="
-font-size:34px;
+font-size:${size.titleSize};
 margin-bottom:20px;
-
-font-family:
-Orbitron,
-sans-serif;
-
+font-family:Orbitron,sans-serif;
 letter-spacing:2px;
-
-text-shadow:
-0 0 20px rgba(255,255,255,.15);
+color:${titleColor};
+text-shadow:${titleTextShadow};
 ">
 ${titolo}
 </h1>
 
 <div style="
-font-size:22px;
+font-size:${size.textSize};
 line-height:1.7;
-
 max-width:700px;
 margin:auto;
-
-opacity:.96;
+color:${mainTextColor};
+font-style:${mainFontStyle};
+letter-spacing:${mainLetterSpacing};
+text-shadow:${mainTextShadow};
 ">
 ${frase}
 </div>
 
+${fraseFinaleHTML}
+${emoticonsHTML}
+${firmaHTML}
 ${gifHTML}
-
 ${mediaHTML}
-
-
+${audioHTML}
 ${socialButtons}
 
-
 </div>
-
 </div>
-
 `;
 }
 
-function genera(){
+/* =========================
+   GENERATE PREVIEW
+========================= */
 
+function genera() {
   const card = buildCardHTML();
 
-  document.getElementById(
-    "previewHost"
-  ).innerHTML = card;
+  const previewHost = document.getElementById("previewHost");
+  const codeBox = document.getElementById("codeBox");
 
-  document.getElementById(
-    "codeBox"
-  ).textContent = card;
+  if (previewHost) previewHost.innerHTML = card;
+  if (codeBox) codeBox.textContent = card;
 
-  /* =========================
-     PREVIEW YOUTUBE HUB
-  ========================= */
-
-  const old =
-    document.getElementById(
-      "ytFloatingPreview"
-    );
-
-  if(old){
-    old.remove();
-  }
-
-  const ytid =
-    document.getElementById(
-      "ytid_auto"
-    ).value;
-
-  if(!ytid) return;
-
-  const preview =
-    document.createElement("div");
-
-  preview.id =
-    "ytFloatingPreview";
-
-preview.style.cssText = `
-position:relative;
-
-margin-left:auto;
-margin-right:auto;
-
-margin-top:-28px;
-
-max-width:340px;
-width:92%;
-
-
-
-z-index:999999;
-
-border-radius:32px;
-overflow:visible;
-
-background:
-linear-gradient(
-180deg,
-rgba(15,15,18,.98),
-rgba(0,0,0,.98)
-);
-
-border:1px solid rgba(255,255,255,.08);
-
-box-shadow:
-0 0 30px rgba(255,0,0,.18),
-0 0 80px rgba(255,0,0,.12),
-0 25px 60px rgba(0,0,0,.55),
-inset 0 1px 0 rgba(255,255,255,.08);
-
-backdrop-filter:blur(10px);
-
-animation:ytPulse 4s infinite;
-
-transition:.35s;
-`;
-
-preview.innerHTML = `
-
-<div style="
-position:relative;
-width:100%;
-aspect-ratio:16/9;
-overflow:visible;
-border-radius:28px;
-background:#000;
-">
-
-<iframe
-src="https://www.youtube.com/embed/${ytid}?autoplay=1&mute=1&controls=1&loop=1&playlist=${ytid}"
-style="
-width:100%;
-height:100%;
-border:none;
-
-transform:scale(1.02);
-
-filter:
-contrast(1.05)
-saturate(1.15)
-brightness(.96);
-"
-allow="
-accelerometer;
-autoplay;
-clipboard-write;
-encrypted-media;
-gyroscope;
-picture-in-picture;
-fullscreen
-"
-allowfullscreen>
-</iframe>
-
-<div style="
-position:absolute;
-inset:0;
-
-pointer-events:none;
-
-box-shadow:
-inset 0 0 80px rgba(255,0,0,.18),
-inset 0 0 120px rgba(255,0,0,.12);
-">
-</div>
-
-</div>
-
-<div style="
-padding:18px;
-
-text-align:center;
-
-font-size:19px;
-font-weight:700;
-
-letter-spacing:4px;
-
-color:white;
-
-font-family:
-Orbitron,
-sans-serif;
-
-background:
-linear-gradient(
-180deg,
-rgba(22,22,25,.96),
-rgba(0,0,0,.98)
-);
-
-border-top:
-1px solid rgba(255,255,255,.06);
-
-text-shadow:
-0 0 12px rgba(255,255,255,.18);
-
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.05);
-">
-
-🎬 YOUTUBE LIVE PREVIEW
-
-</div>
-
-`;
-
-document.querySelectorAll(".panel")[1]
-.querySelector(".panelBody")
-.appendChild(preview);
 }
 
-function exportPublicCard(){
+/* =========================
+   EXPORT PUBLIC CARD
+========================= */
 
-const cardHTML = buildCardHTML();
+function exportPublicCard() {
+  const cardHTML = buildCardHTML();
+  const rawTitle = getVal("titolo").trim() || "temeria-card";
 
-const titolo =
-document.getElementById("titolo")
-.value
-.trim()
-.toLowerCase()
-.replace(/[^a-z0-9]+/g,"-") || "temeria-card";
+  const fileName = rawTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "temeria-card";
 
-const finalHTML = `
-
+  const finalHTML = `
 <!DOCTYPE html>
-
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${titolo}</title>
+
+<title>${escapeHTML(rawTitle)}</title>
+
+<meta property="og:title" content="${escapeHTML(rawTitle)}">
+<meta property="og:description" content="Card creata con Temeria Media Forge">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${getPublicCardURL()}">
+<meta property="og:image" content="${getPublicBaseURL()}assets/og/temeria-og.jpg">
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -812,32 +703,104 @@ body{
   background:#070a12;
   font-family:Orbitron,sans-serif;
 }
+button,a{
+  font-family:Orbitron,sans-serif;
+}
 </style>
-
 </head>
+
 <body>
-
 ${cardHTML}
-
 </body>
 </html>
 `;
 
-const blob = new Blob(
-[finalHTML],
-{type:"text/html"}
-);
+  downloadTextFile(`${fileName}.html`, finalHTML, "text/html");
+}
 
-const a = document.createElement("a");
+/* =========================
+   DOWNLOAD GENERATOR
+========================= */
 
-a.href = URL.createObjectURL(blob);
+function downloadGeneratorHTML() {
+  const html = document.documentElement.outerHTML;
+  downloadTextFile("temeria-media-forge-generator.html", html, "text/html");
+}
 
-a.download = `${titolo}.html`;
+function downloadTextFile(filename, content, type = "text/plain") {
+  const blob = new Blob([content], { type });
+  const a = document.createElement("a");
 
-document.body.appendChild(a);
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
 
-a.click();
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 
-document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
 
+/* =========================
+   RESET
+========================= */
+
+function resetForge() {
+  const ids = [
+    "titolo",
+    "frase",
+    "frase2",
+    "firma",
+    "emoticons",
+    "gifurl",
+    "imglink",
+    "minigif",
+    "minilink",
+    "ytid_auto",
+    "ytid_btn",
+    "mp3url",
+    "videourl"
+  ];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  const socialExport = document.getElementById("socialExport");
+  if (socialExport) socialExport.value = "normal";
+
+  const outputMode = document.getElementById("outputMode");
+  if (outputMode) outputMode.value = "social_clean";
+
+  const cardSize = document.getElementById("cardSize");
+  if (cardSize) cardSize.value = "medium";
+
+  const audioMode = document.getElementById("audioMode");
+  if (audioMode) audioMode.value = "yt_auto";
+
+  genera();
+}
+
+/* =========================
+   COMPAT HTML ATTUALE
+========================= */
+
+function salvaCard() {
+  exportPublicCard();
+}
+
+function salvaGenerator() {
+  downloadGeneratorHTML();
+}
+
+function resetCampi() {
+  resetForge();
+}
+
+function copiaCodice() {
+  const codeBox = document.getElementById("codeBox");
+  if (!codeBox) return;
+
+  safeCopyText(codeBox.textContent || "");
 }

@@ -488,7 +488,82 @@ accept=".png,.jpg,.jpeg,.webp,.gif,.heic,image/*"
 <script src="js/app.js"></script>
 
 <script>
+/* =========================
+   LOAD MAIN IMAGE FROM PC
+========================= */
 
+document
+.getElementById("giffile")
+.addEventListener(
+  "change",
+  function(e){
+
+    const file =
+      e.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+      new FileReader();
+
+    reader.onload =
+      function(evt){
+
+        const dataURL =
+          evt.target.result;
+
+        document
+        .getElementById("gifurl")
+        .value =
+          dataURL;
+
+        genera();
+
+      };
+
+    reader.readAsDataURL(file);
+
+  }
+);
+
+/* =========================
+   LOAD MINI LOGO FROM PC
+========================= */
+
+document
+.getElementById("minifile")
+.addEventListener(
+  "change",
+  function(e){
+
+    const file =
+      e.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+      new FileReader();
+
+    reader.onload =
+      function(evt){
+
+        const dataURL =
+          evt.target.result;
+
+        document
+        .getElementById("minigif")
+        .value =
+          dataURL;
+
+        genera();
+
+      };
+
+    reader.readAsDataURL(file);
+
+  }
+);
 </script>
 </body>
+
 </html>

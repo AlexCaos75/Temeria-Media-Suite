@@ -215,8 +215,10 @@ function exportPublicCard() {
     getVal("gifurl").trim()
 
     || `${getPublicBaseURL()}assets/og/temeria-og.jpg`;
-
+const youtubeURL =
+  getVal("youtubeurl").trim();
   const finalHTML = `
+
 <!DOCTYPE html>
 <html lang="it">
 
@@ -270,6 +272,37 @@ a{
 <body>
 
 ${cardHTML}
+
+${
+youtubeURL
+? `
+<div style="
+margin-top:24px;
+width:100%;
+max-width:720px;
+margin-left:auto;
+margin-right:auto;
+">
+
+<iframe
+width="100%"
+height="120"
+src="${youtubeURL}"
+title="Temeria Music"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen
+style="
+border:none;
+border-radius:18px;
+box-shadow:0 0 25px rgba(176,108,255,.35);
+">
+</iframe>
+
+</div>
+`
+: ""
+}
 
 </body>
 </html>

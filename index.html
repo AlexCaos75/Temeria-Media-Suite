@@ -205,18 +205,51 @@ accept=".png,.jpg,.jpeg,.webp,.gif,.heic,image/*"
     </div>
   </div>
 
-  <div class="rowBtns">
-    <button onclick="genera()">Genera Card</button>
-    <button type="button" onclick="toggleAutoGenerate()">Auto-genera ON/OFF</button>
-<button type="button" onclick="genera()">Aggiorna Preview</button>
-    <button onclick="copiaCodice()">Copia Codice Card</button>
-    <button onclick="salvaCard()">Scarica Card HTML</button>
-    <button onclick="salvaGenerator()">Scarica questo Generatore</button>
-    <button class="danger" onclick="resetCampi()">Reset</button>
-    <button onclick="exportPublicCard()">
-  Esporta Card Pubblica
-</button>
-  </div>
+<div class="rowBtns">
+  <button onclick="genera()">Genera Card</button>
+
+  <button
+    type="button"
+    onclick="toggleAutoGenerate()"
+  >
+    Auto-genera ON/OFF
+  </button>
+
+  <button
+    type="button"
+    onclick="genera()"
+  >
+    Aggiorna Preview
+  </button>
+
+  <button onclick="copiaCodice()">
+    Copia Codice Card
+  </button>
+
+  <button onclick="salvaCard()">
+    Scarica Card HTML
+  </button>
+
+  <button onclick="salvaGenerator()">
+    Scarica questo Generatore
+  </button>
+
+  <button
+    class="danger"
+    onclick="resetCampi()"
+  >
+    Reset
+  </button>
+
+  <button onclick="exportPublicCard()">
+    Esporta Card Pubblica
+  </button>
+
+  <button onclick="shareCurrentCard()">
+    Condividi Card Live
+  </button>
+
+</div>
 
   <!-- THEME LAB -->
   <div class="panel" style="margin-top:16px;">
@@ -433,26 +466,6 @@ accept=".png,.jpg,.jpeg,.webp,.gif,.heic,image/*"
 }
 </style>
 
-<script>
-
-const urlParams =
-new URLSearchParams(
-window.location.search
-);
-
-const sharedCard =
-urlParams.get("card");
-
-if(sharedCard){
-
-  console.log(
-    "CARD DA CARICARE:",
-    sharedCard
-  );
-
-}
-
-</script>
 
 <script src="js/utils.js"></script>
 <script src="js/storage.js"></script>

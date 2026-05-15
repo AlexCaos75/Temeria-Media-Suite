@@ -215,8 +215,13 @@ function exportPublicCard() {
     getVal("gifurl").trim()
 
     || `${getPublicBaseURL()}assets/og/temeria-og.jpg`;
+const youtubeID =
+  getVal("ytid_btn").trim();
+
 const youtubeURL =
-  getVal("youtubeurl").trim();
+  youtubeID
+  ? `https://www.youtube.com/embed/${youtubeID}?controls=1&loop=1&playlist=${youtubeID}`
+  : "";
   const finalHTML = `
 
 <!DOCTYPE html>
@@ -318,8 +323,7 @@ z-index:50;
 `
 : ""
 }
-const youtubeURL =
-  getVal("youtubeurl").trim();
+
 
   ${
 youtubeURL
@@ -581,6 +585,14 @@ function buildPublishedCardHTML(){
 
     || `${getPublicBaseURL()}assets/og/temeria-og.jpg`;
 
+  const youtubeID =
+    getVal("ytid_btn").trim();
+
+  const youtubeURL =
+    youtubeID
+    ? `https://www.youtube.com/embed/${youtubeID}?controls=1&loop=1&playlist=${youtubeID}`
+    : "";
+
   return `
 <!DOCTYPE html>
 <html lang="it">
@@ -638,6 +650,43 @@ a{
 <body>
 
 ${cardHTML}
+
+${
+youtubeURL
+? `
+<div style="
+margin-top:24px;
+width:100%;
+max-width:720px;
+margin-left:auto;
+margin-right:auto;
+">
+
+<iframe
+width="100%"
+height="120"
+src="${youtubeURL}"
+title="Temeria Music"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen
+style="
+display:block;
+width:100%;
+max-width:720px;
+margin:auto;
+border:none;
+border-radius:18px;
+overflow:hidden;
+background:#000;
+box-shadow:0 0 25px rgba(176,108,255,.35);
+">
+</iframe>
+
+</div>
+`
+: ""
+}
 
 </body>
 </html>

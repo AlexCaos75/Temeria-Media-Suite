@@ -589,42 +589,55 @@ async function publishCardToGitHub(){
     const apiURL =
       `https://api.github.com/repos/${TEMERIA_GITHUB.user}/${TEMERIA_GITHUB.repo}/contents/${path}`;
 
-    /* =========================
-       CHECK FILE ESISTENTE
-    ========================== */
+   /* =========================
+   CHECK FILE ESISTENTE
+========================= */
 
-    let existingSHA = null;
+let existingSHA = null;
 
-    try{
+try{
 
-      const checkResponse =
-        await fetch(apiURL,{
+  const checkResponse =
+    await fetch(apiURL,{
 
-          headers:{
-            Authorization:
-              `Bearer ${token}`
-          }
+      method:"GET",
 
-        });
-
-      if(checkResponse.ok){
-
-        const existingData =
-          await checkResponse.json();
-
-        existingSHA =
-          existingData.sha;
-
+      headers:{
+        Authorization:
+          `Bearer ${token}`
       }
 
-    }catch(e){
+    });
 
-      console.log(
-        "Nuovo file GitHub"
-      );
+  if(checkResponse.ok){
 
-    }
+    const existingData =
+      await checkResponse.json();
 
+    existingSHA =
+      existingData.sha;
+
+    console.log(
+      "EXISTING SHA:",
+      existingSHA
+    );
+
+  }else{
+
+    console.log(
+      "Nuovo file GitHub"
+    );
+
+  }
+
+}catch(e){
+
+  console.log(
+    "Errore check SHA:",
+    e
+  );
+
+}
     /* =========================
        BODY REQUEST
     ========================== */
@@ -646,12 +659,15 @@ async function publishCardToGitHub(){
        UPDATE FILE ESISTENTE
     ========================== */
 
-    if(existingSHA){
+  if(
+  existingSHA &&
+  typeof existingSHA === "string"
+){
 
-      bodyData.sha =
-        existingSHA;
+  bodyData.sha =
+    existingSHA;
 
-    }
+}
 
     /* =========================
        UPLOAD GITHUB

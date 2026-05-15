@@ -229,6 +229,8 @@ name="viewport"
 content="width=device-width, initial-scale=1.0"
 >
 
+<link rel="icon" href="data:,">
+
 <title>
 ${escapeHTML(rawTitle)}
 </title>
@@ -272,14 +274,6 @@ ${cardHTML}
 </body>
 </html>
 `;
-
-  downloadTextFile(
-    `${fileName}.html`,
-    finalHTML,
-    "text/html"
-  );
-
-}
 
 /* =========================
    SHARE HELPERS

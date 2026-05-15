@@ -26,35 +26,27 @@ if (gifFileInput) {
       const reader =
         new FileReader();
 
-      reader.onload = function(ev){
+reader.onload = function(ev){
 
-        gifDataURL =
-          ev.target.result;
+  gifDataURL =
+    ev.target.result;
 
-        const gifUrlInput =
-          document.getElementById("gifurl");
+  const gifUrlInput =
+    document.getElementById("gifurl");
 
-        if (gifUrlInput) {
-          gifUrlInput.value = "";
-        }
+  if (gifUrlInput) {
+    gifUrlInput.value = "";
+  }
 
-        console.log(
-          "GIF DATAURL LOADED"
-        );
-
-        genera();
-
-        e.target.value = "";
-
-      };
-
-      reader.readAsDataURL(file);
-
-    }
+  console.log(
+    "GIF DATAURL LOADED"
   );
 
-}
+  genera();
 
+  e.target.value = "";
+
+};
 /* =========================
    MINI FILE UPLOAD
 ========================= */

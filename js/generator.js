@@ -668,79 +668,141 @@ src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytidAuto)}?auto
 `;
   }
 
-  /* YT BUTTONS */
+ /* YT BUTTONS MODERN */
 
-  if (showAudio && audioMode === "yt_buttons" && ytidBtn) {
+if (
+  showAudio &&
+  audioMode === "yt_buttons" &&
+  ytidBtn
+) {
 
-    const ytURL =
-      `https://youtube.com/watch?v=${encodeURIComponent(ytidBtn)}`;
+  audioHTML += `
 
-    audioHTML += `
 <div style="
 margin-top:25px;
-display:flex;
-gap:14px;
-justify-content:center;
-flex-wrap:wrap;
+width:100%;
+max-width:720px;
+margin-left:auto;
+margin-right:auto;
 ">
 
-<a
-href="${ytURL}"
-target="_blank"
+<iframe
+id="temeriaYTButtons"
+width="100%"
+height="120"
+src="https://www.youtube.com/embed/${encodeURIComponent(ytidBtn)}?controls=1&playsinline=1&loop=1&playlist=${encodeURIComponent(ytidBtn)}"
+title="Temeria Music"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen
 style="
-padding:15px 26px;
-border-radius:999px;
-background:linear-gradient(90deg,#ff0000,#ff3b3b);
-color:white;
-text-decoration:none;
-font-weight:bold;
-font-size:17px;
-box-shadow:0 0 25px rgba(255,0,0,.35);
-"
->
-▶ APRI MUSICA
-</a>
-
-<button
-onclick="safeCopyText('${ytURL}')"
-style="
-padding:15px 26px;
+display:block;
+width:100%;
 border:none;
-cursor:pointer;
-border-radius:999px;
-background:linear-gradient(90deg,#111827,#1f2937);
-color:white;
-font-weight:bold;
-font-size:17px;
-"
->
-📋 COPIA LINK
-</button>
+border-radius:18px;
+overflow:hidden;
+background:#000;
+box-shadow:0 0 25px rgba(176,108,255,.35);
+">
+</iframe>
 
 </div>
+
 `;
-  }
+}
+ /* MP3 */
 
-  /* MP3 */
+if (
+  showAudio &&
+  audioMode === "mp3" &&
+  mp3url
+) {
 
-  if (showAudio && audioMode === "mp3" && mp3url) {
+  audioHTML += `
 
-    audioHTML += `
+<div style="
+margin-top:25px;
+width:100%;
+max-width:720px;
+margin-left:auto;
+margin-right:auto;
+">
+
 <audio
-src="${escapeAttr(mp3url)}"
 controls
 loop
+preload="metadata"
 style="
+display:block;
 width:100%;
-margin-top:25px;
-border-radius:999px;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 0 25px rgba(176,108,255,.25);
+background:rgba(255,255,255,.06);
 "
-></audio>
-`;
-  }
+>
 
+<source
+src="${escapeAttr(mp3url)}"
+type="audio/mpeg"
+>
+
+Il tuo browser non supporta audio HTML5.
+
+</audio>
+
+</div>
+
+`;
+}
+/* MP4 */
+
+if (
+  showAudio &&
+ audioMode === "mp4" &&
+video
+) {
+
+  audioHTML += `
+
+<div style="
+margin-top:25px;
+width:100%;
+max-width:720px;
+margin-left:auto;
+margin-right:auto;
+">
+
+<video
+controls
+loop
+playsinline
+preload="metadata"
+style="
+display:block;
+width:100%;
+border-radius:22px;
+overflow:hidden;
+background:#000;
+box-shadow:0 0 30px rgba(176,108,255,.28);
+"
+>
+
+<source
+src="${escapeAttr(video)}"
+type="video/mp4"
+>
+
+Il tuo browser non supporta video HTML5.
+
+</video>
+
+</div>
+
+`;
 }
 
+}
 /* =========================
    TEMERIA LEGACY ENGINE
 ========================= */

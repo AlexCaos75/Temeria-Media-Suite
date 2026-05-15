@@ -386,7 +386,7 @@ window.addEventListener(
 
 const TEMERIA_GITHUB = {
 
-  user: "alexcaos75",
+  user: "AlexCaos75",
 
   repo: "Temeria-Media-Suite",
 
@@ -621,7 +621,9 @@ async function publishCardToGitHub(){
       await response.json();
 
     console.log(data);
-
+alert(
+  JSON.stringify(data,null,2)
+);
     if(data.content){
 
       const liveURL =

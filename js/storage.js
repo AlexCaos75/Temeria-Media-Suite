@@ -1,40 +1,17 @@
 /* =========================
-   STORAGE
+   TEMERIA STORAGE ENGINE V3
 ========================= */
 
-const APP_VERSION = "2.0.0";
+const APP_VERSION = "3.0.0";
 
-const STATE_KEY_V2 =
-  "TEMERIA_FORGE_STATE";
-
-const HISTORY_KEY_V2 =
-  "TEMERIA_FORGE_HISTORY";
+const STATE_KEY = "TEMERIA_STATE_V3";
+const HISTORY_KEY = "TEMERIA_HISTORY_V3";
+const SHARED_KEY = "TEMERIA_SHARED_V3";
 
 let autosaveEnabled = true;
 
 /* =========================
-   JSON SAFE
-========================= */
-
-function safeJSONParse(
-  raw,
-  fallback
-) {
-
-  try {
-
-    return JSON.parse(raw);
-
-  } catch (e) {
-
-    return fallback;
-
-  }
-
-}
-
-/* =========================
-   FIELD LIST
+   STORAGE FIELDS
 ========================= */
 
 const STORAGE_FIELDS = [
@@ -69,45 +46,52 @@ const STORAGE_FIELDS = [
   "c_accent2",
   "c_accent3",
   "c_accent4",
-  "glowPower",
-
-  "ytPaste",
-  "ytPreset",
-  "updateManifestUrl"
+  "glowPower"
 
 ];
 
 /* =========================
-   STATE COLLECT
+   SAFE JSON
 ========================= */
 
-function collectState() {
+function safeJSON(raw, fallback = null){
+
+  try{
+    return JSON.parse(raw);
+  }catch(e){
+    return fallback;
+  }
+
+}
+
+/* =========================
+   BUILD STATE
+========================= */
+
+function collectState(){
 
   const data = {};
 
-  STORAGE_FIELDS.forEach(id => {
+  STORAGE_FIELDS.forEach(id=>{
 
-    const el =
-      document.getElementById(id);
+    const el = document.getElementById(id);
 
-    if (!el)
-      return;
+    if(!el) return;
 
-    data[id] =
-      el.value ?? "";
+    data[id] = el.value ?? "";
 
   });
 
   return {
 
-    app:
-      "Temeria Media Forge",
+    version: APP_VERSION,
 
-    version:
-      APP_VERSION,
-
-    savedAt:
+    createdAt:
       new Date().toISOString(),
+
+    id:
+      "card_" +
+      Date.now(),
 
     data
 
@@ -119,48 +103,25 @@ function collectState() {
    APPLY STATE
 ========================= */
 
-function applyState(state) {
+function applyState(state){
 
-  if (
-    !state ||
-    !state.data
-  ) {
-
+  if(!state || !state.data)
     return false;
 
-  }
-
-  Object.entries(
-    state.data
-  ).forEach(([id, value]) => {
+  STORAGE_FIELDS.forEach(id=>{
 
     const el =
       document.getElementById(id);
 
-    if (!el)
-      return;
+    if(!el) return;
 
     el.value =
-      value ?? "";
+      state.data[id] ?? "";
 
   });
 
-  if (
-    typeof updateYoutubeThumb ===
-    "function"
-  ) {
-
-    updateYoutubeThumb();
-
-  }
-
-  if (
-    typeof renderThemeSwatches ===
-    "function"
-  ) {
-
-    renderThemeSwatches();
-
+  if(typeof genera === "function"){
+    genera();
   }
 
   return true;
@@ -168,41 +129,18 @@ function applyState(state) {
 }
 
 /* =========================
-   SAVE / LOAD
+   SAVE / LOAD CURRENT
 ========================= */
 
-function saveStateV2(state) {
-
-  localStorage.setItem(
-    STATE_KEY_V2,
-    JSON.stringify(state)
-  );
-
-}
-
-function loadStateV2() {
-
-  const raw =
-    localStorage.getItem(
-      STATE_KEY_V2
-    );
-
-  if (!raw)
-    return null;
-
-  return safeJSONParse(
-    raw,
-    null
-  );
-
-}
-
-function saveCurrentState() {
+function saveCurrentState(){
 
   const state =
     collectState();
 
-  saveStateV2(state);
+  localStorage.setItem(
+    STATE_KEY,
+    JSON.stringify(state)
+  );
 
   updateStorageKPI();
 
@@ -210,12 +148,20 @@ function saveCurrentState() {
 
 }
 
-function restoreState() {
+function restoreState(){
+
+  const raw =
+    localStorage.getItem(
+      STATE_KEY
+    );
+
+  if(!raw)
+    return false;
 
   const state =
-    loadStateV2();
+    safeJSON(raw);
 
-  if (!state)
+  if(!state)
     return false;
 
   return applyState(state);
@@ -226,52 +172,39 @@ function restoreState() {
    AUTOSAVE
 ========================= */
 
-function autosaveNow() {
+function autosaveNow(){
 
-  if (!autosaveEnabled)
+  if(!autosaveEnabled)
     return;
 
   saveCurrentState();
 
 }
 
-const autosaveDebounced =
+function bindAutosave(){
 
-  typeof debounce ===
-  "function"
-
-    ? debounce(
-        autosaveNow,
-        400
-      )
-
-    : autosaveNow;
-
-function bindAutosave() {
-
-  STORAGE_FIELDS.forEach(id => {
+  STORAGE_FIELDS.forEach(id=>{
 
     const el =
       document.getElementById(id);
 
-    if (!el)
-      return;
+    if(!el) return;
 
     el.addEventListener(
       "input",
-      autosaveDebounced
+      autosaveNow
     );
 
     el.addEventListener(
       "change",
-      autosaveDebounced
+      autosaveNow
     );
 
   });
 
 }
 
-function toggleAutosave() {
+function toggleAutosave(){
 
   autosaveEnabled =
     !autosaveEnabled;
@@ -284,35 +217,25 @@ function toggleAutosave() {
    HISTORY
 ========================= */
 
-function getHistory() {
+function getHistory(){
 
   const raw =
     localStorage.getItem(
-      HISTORY_KEY_V2
+      HISTORY_KEY
     );
 
-  if (!raw)
+  if(!raw)
     return [];
 
-  const parsed =
-    safeJSONParse(raw, []);
-
-  return Array.isArray(parsed)
-    ? parsed
-    : [];
+  return safeJSON(raw, []);
 
 }
 
-function setHistory(list) {
-
-  const safeList =
-    Array.isArray(list)
-      ? list
-      : [];
+function setHistory(history){
 
   localStorage.setItem(
-    HISTORY_KEY_V2,
-    JSON.stringify(safeList)
+    HISTORY_KEY,
+    JSON.stringify(history)
   );
 
   renderHistory();
@@ -321,43 +244,23 @@ function setHistory(list) {
 
 }
 
-function saveToHistory() {
+function saveToHistory(){
 
   const state =
     collectState();
 
-  const title =
-
-    state.data.titolo?.trim()
-
-    || "Card senza titolo";
-
-  const item = {
-
-    id:
-      "hist_" + Date.now(),
-
-    title,
-
-    savedAt:
-      new Date().toISOString(),
-
-    state
-
-  };
-
   const history =
     getHistory();
 
-  history.unshift(item);
+  history.unshift(state);
 
   setHistory(
-    history.slice(0, 20)
+    history.slice(0, 30)
   );
 
 }
 
-function restoreHistory(id) {
+function restoreHistory(id){
 
   const history =
     getHistory();
@@ -367,25 +270,15 @@ function restoreHistory(id) {
       x => x.id === id
     );
 
-  if (!item)
-    return;
+  if(!item) return;
 
-  applyState(item.state);
+  applyState(item);
 
-  saveStateV2(item.state);
-
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  saveCurrentState();
 
 }
 
-function deleteHistoryItem(id) {
+function deleteHistoryItem(id){
 
   const history =
     getHistory().filter(
@@ -396,55 +289,39 @@ function deleteHistoryItem(id) {
 
 }
 
-function clearHistory() {
+function clearHistory(){
 
-  if (
+  if(
     !confirm(
-      "Vuoi svuotare tutta la History?"
+      "Svuotare tutta la history?"
     )
-  ) {
-
-    return;
-
-  }
+  ) return;
 
   localStorage.removeItem(
-    HISTORY_KEY_V2
+    HISTORY_KEY
   );
 
   renderHistory();
 
-  updateStorageKPI();
-
 }
 
-function renderHistory() {
+/* =========================
+   RENDER HISTORY
+========================= */
+
+function renderHistory(){
 
   const box =
     document.getElementById(
       "historyList"
     );
 
-  if (!box)
-    return;
+  if(!box) return;
 
   const history =
     getHistory();
 
-  if (
-    !Array.isArray(history)
-  ) {
-
-    box.innerHTML =
-      "History corrotta.";
-
-    return;
-
-  }
-
-  if (
-    history.length === 0
-  ) {
+  if(history.length === 0){
 
     box.innerHTML =
       "Nessuna card salvata.";
@@ -453,393 +330,204 @@ function renderHistory() {
 
   }
 
-  box.innerHTML =
+  box.innerHTML = history.map(item=>`
 
-    history.map(item => {
-
-      const date =
-        new Date(
-          item.savedAt
-        ).toLocaleString(
-          "it-IT"
-        );
-
-      return `
 <div style="
 padding:12px;
 margin-bottom:10px;
-border:1px solid rgba(255,255,255,.12);
 border-radius:14px;
 background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
 ">
 
 <div style="
 font-weight:bold;
-color:#fff;
+margin-bottom:6px;
 ">
-${escapeHTML(item.title)}
+${escapeHTML(
+  item.data.titolo ||
+  "Card senza titolo"
+)}
 </div>
 
 <div style="
-opacity:.75;
 font-size:12px;
-margin-top:4px;
+opacity:.7;
+margin-bottom:10px;
 ">
-${escapeHTML(date)}
+${new Date(
+  item.createdAt
+).toLocaleString("it-IT")}
 </div>
 
 <div style="
-margin-top:10px;
 display:flex;
 gap:8px;
 flex-wrap:wrap;
 ">
 
 <button
-type="button"
 onclick="restoreHistory('${item.id}')"
 >
 Ripristina
 </button>
 
 <button
-type="button"
 class="danger"
 onclick="deleteHistoryItem('${item.id}')"
 >
 Elimina
 </button>
 
+<button
+onclick="shareHistoryCard('${item.id}')"
+>
+Condividi
+</button>
+
 </div>
+
 </div>
-`;
 
-    }).join("");
-
-}
-
-/* =========================
-   BACKUP EXPORT
-========================= */
-
-function exportBackup() {
-
-  const backup = {
-
-    app:
-      "Temeria Media Forge",
-
-    version:
-      APP_VERSION,
-
-    exportedAt:
-      new Date().toISOString(),
-
-    state:
-      collectState(),
-
-    history:
-      getHistory()
-
-  };
-
-  const json =
-    JSON.stringify(
-      backup,
-      null,
-      2
-    );
-
-  const filename =
-
-    "temeria-forge-backup-"
-
-    + new Date()
-      .toISOString()
-      .slice(0, 10)
-
-    + ".json";
-
-  if (
-    typeof downloadTextFile ===
-    "function"
-  ) {
-
-    downloadTextFile(
-      filename,
-      json,
-      "application/json"
-    );
-
-    return;
-
-  }
-
-  const blob =
-    new Blob(
-      [json],
-      {
-        type:
-          "application/json"
-      }
-    );
-
-  const a =
-    document.createElement("a");
-
-  a.href =
-    URL.createObjectURL(blob);
-
-  a.download =
-    filename;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  document.body.removeChild(a);
-
-  URL.revokeObjectURL(a.href);
+`).join("");
 
 }
 
 /* =========================
-   BACKUP IMPORT
+   SHARE SYSTEM
 ========================= */
 
-function importBackup() {
+function saveSharedCard(state){
 
-  const input =
-    document.createElement("input");
-
-  input.type = "file";
-
-  input.accept =
-    "application/json,.json";
-
-  input.onchange =
-    async () => {
-
-      const file =
-        input.files?.[0];
-
-      if (!file)
-        return;
-
-      const text =
-        await file.text();
-
-      const backup =
-        safeJSONParse(
-          text,
-          null
-        );
-
-      if (!backup) {
-
-        alert(
-          "Backup non valido."
-        );
-
-        return;
-
-      }
-
-      if (backup.state) {
-
-        applyState(
-          backup.state
-        );
-
-        saveStateV2(
-          backup.state
-        );
-
-      }
-
-      if (
-        Array.isArray(
-          backup.history
-        )
-      ) {
-
-        localStorage.setItem(
-          HISTORY_KEY_V2,
-          JSON.stringify(
-            backup.history
-          )
-        );
-
-      }
-
-      renderHistory();
-
-      updateStorageKPI();
-
-      if (
-        typeof genera ===
-        "function"
-      ) {
-
-        genera();
-
-      }
-
-      alert(
-        "Backup importato."
-      );
-
-    };
-
-  input.click();
-
-}
-
-/* =========================
-   IMPORT HTML
-========================= */
-
-function importaDaHTML() {
-
-  const box =
-    document.getElementById(
-      "importBox"
+  const cards =
+    safeJSON(
+      localStorage.getItem(
+        SHARED_KEY
+      ),
+      {}
     );
 
-  if (!box)
-    return;
+  cards[state.id] = state;
 
-  const html =
-    box.value.trim();
-
-  if (!html)
-    return;
-
-  const titleMatch =
-    html.match(
-      /<h1[^>]*>([\s\S]*?)<\/h1>/i
-    );
-
-  const textMatch =
-    html.match(
-      /<div[^>]*line-height:[^>]*>([\s\S]*?)<\/div>/i
-    );
-
-  const imgMatch =
-    html.match(
-      /<img[^>]+src="([^"]+)"/i
-    );
-
-  const ytMatch =
-    html.match(
-      /youtube\.com\/embed\/([^?"]+)/i
-    );
-
-  const videoMatch =
-    html.match(
-      /<video[^>]+src="([^"]+)"/i
-    );
-
-  if (titleMatch) {
-
-    const el =
-      document.getElementById(
-        "titolo"
-      );
-
-    if (el) {
-
-      el.value =
-        cleanImportedHTML(
-          titleMatch[1]
-        );
-
-    }
-
-  }
-
-  if (textMatch) {
-
-    const el =
-      document.getElementById(
-        "frase"
-      );
-
-    if (el) {
-
-      el.value =
-        cleanImportedHTML(
-          textMatch[1]
-        ).replace(
-          /<br\s*\/?>/gi,
-          "\n"
-        );
-
-    }
-
-  }
-
-  if (imgMatch) {
-
-    const el =
-      document.getElementById(
-        "gifurl"
-      );
-
-    if (el)
-      el.value = imgMatch[1];
-
-  }
-
-  if (ytMatch) {
-
-    const el =
-      document.getElementById(
-        "ytid_auto"
-      );
-
-    if (el)
-      el.value = ytMatch[1];
-
-  }
-
-  if (videoMatch) {
-
-    const el =
-      document.getElementById(
-        "videourl"
-      );
-
-    if (el)
-      el.value = videoMatch[1];
-
-  }
-
-  saveCurrentState();
-
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
-
-}
-
-function cleanImportedHTML(str) {
-
-  const tmp =
-    document.createElement("div");
-
-  tmp.innerHTML = str;
-
-  return (
-    tmp.textContent
-    || tmp.innerText
-    || ""
+  localStorage.setItem(
+    SHARED_KEY,
+    JSON.stringify(cards)
   );
+
+}
+
+function shareCurrentCard(){
+
+  const state =
+    collectState();
+
+  saveSharedCard(state);
+
+  const url =
+    window.location.origin +
+    window.location.pathname +
+    "?share=" +
+    encodeURIComponent(state.id) +
+    "&v=" +
+    Date.now();
+
+  navigator.clipboard.writeText(url);
+
+  alert(
+    "Link card copiato!"
+  );
+
+}
+
+function shareHistoryCard(id){
+
+  const history =
+    getHistory();
+
+  const item =
+    history.find(
+      x => x.id === id
+    );
+
+  if(!item) return;
+
+  saveSharedCard(item);
+
+  const url =
+    window.location.origin +
+    window.location.pathname +
+    "?share=" +
+    encodeURIComponent(id) +
+    "&v=" +
+    Date.now();
+
+  navigator.clipboard.writeText(url);
+
+  alert(
+    "Link card copiato!"
+  );
+
+}
+
+/* =========================
+   LOAD SHARED CARD
+========================= */
+
+function loadSharedCard(){
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const shareId =
+    params.get("share");
+
+  if(!shareId)
+    return;
+
+  const cards =
+    safeJSON(
+      localStorage.getItem(
+        SHARED_KEY
+      ),
+      {}
+    );
+
+  const state =
+    cards[shareId];
+
+  if(!state)
+    return;
+
+  applyState(state);
+
+}
+
+/* =========================
+   RESET
+========================= */
+
+function hardResetForge(){
+
+  localStorage.removeItem(
+    STATE_KEY
+  );
+
+  STORAGE_FIELDS.forEach(id=>{
+
+    const el =
+      document.getElementById(id);
+
+    if(!el) return;
+
+    el.value = "";
+
+  });
+
+  if(typeof genera === "function"){
+    genera();
+  }
 
 }
 
@@ -847,7 +535,7 @@ function cleanImportedHTML(str) {
    KPI
 ========================= */
 
-function updateStorageKPI() {
+function updateStorageKPI(){
 
   const kpiSave =
     document.getElementById(
@@ -859,65 +547,36 @@ function updateStorageKPI() {
       "kpiHist"
     );
 
-  if (kpiSave) {
+  if(kpiSave){
 
     kpiSave.textContent =
-
       autosaveEnabled
-
-        ? "Autosave: ON"
-
-        : "Autosave: OFF";
+      ? "Autosave: ON"
+      : "Autosave: OFF";
 
   }
 
-  if (kpiHist) {
-
-    const history =
-      getHistory();
+  if(kpiHist){
 
     kpiHist.textContent =
-
-      "History: "
-
-      + (
-
-        Array.isArray(history)
-
-          ? history.length
-
-          : 0
-
-      );
+      "History: " +
+      getHistory().length;
 
   }
 
 }
 
 /* =========================
-   INIT STORAGE
+   INIT
 ========================= */
 
 window.addEventListener(
   "load",
-  () => {
-
-    const rawHistory =
-      localStorage.getItem(
-        HISTORY_KEY_V2
-      );
-
-    if (
-      rawHistory === "null"
-    ) {
-
-      localStorage.removeItem(
-        HISTORY_KEY_V2
-      );
-
-    }
+  ()=>{
 
     bindAutosave();
+
+    loadSharedCard();
 
     restoreState();
 
@@ -925,13 +584,8 @@ window.addEventListener(
 
     updateStorageKPI();
 
-    if (
-      typeof genera ===
-      "function"
-    ) {
-
+    if(typeof genera === "function"){
       genera();
-
     }
 
   }

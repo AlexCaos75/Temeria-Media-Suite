@@ -399,13 +399,20 @@ Condividi
 
 function saveSharedCard(state){
 
-  const cards =
+  let cards =
     safeJSON(
       localStorage.getItem(
         SHARED_KEY
       ),
       {}
     );
+
+  if(
+    !cards ||
+    typeof cards !== "object"
+  ){
+    cards = {};
+  }
 
   cards[state.id] = state;
 

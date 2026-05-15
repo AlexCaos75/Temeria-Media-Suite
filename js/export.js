@@ -325,51 +325,7 @@ z-index:50;
 }
 
 
-  ${
-youtubeURL
-? `
-<div style="
-margin-top:24px;
-width:100%;
-max-width:720px;
-margin-left:auto;
-margin-right:auto;
-">
-
-<iframe
-width="100%"
-height="120"
-src="${
-youtubeURL.includes('embed/')
-? youtubeURL
-: youtubeURL
-  .replace('watch?v=','embed/')
-  + '?controls=1&rel=0&modestbranding=1&playsinline=1'
-}"
-title="Temeria Music"
-frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-referrerpolicy="strict-origin-when-cross-origin"
-allowfullscreen
-style="
-display:block;
-width:100%;
-max-width:720px;
-margin:auto;
-border:none;
-border-radius:18px;
-overflow:hidden;
-background:#000;
-box-shadow:0 0 25px rgba(176,108,255,.35);
-position:relative;
-z-index:50;
-">
-</iframe>
-
-</div>
-`
-: ""
-}
+ 
 </body>
 </html>
 `;

@@ -380,3 +380,298 @@ window.addEventListener(
 
   }
 );
+/* =========================
+   TEMERIA GITHUB PUBLISH V4
+========================= */
+
+const TEMERIA_GITHUB = {
+
+  user: "alexcaos75",
+
+  repo: "Temeria-Media-Suite",
+
+  branch: "main",
+
+  cardsFolder: "cards"
+
+};
+
+/* =========================
+   TOKEN STORAGE
+========================= */
+
+function saveGitHubToken(){
+
+  const token = prompt(
+    "Inserisci GitHub Token"
+  );
+
+  if(!token) return;
+
+  localStorage.setItem(
+    "TEMERIA_GITHUB_TOKEN",
+    token
+  );
+
+  alert(
+    "💜 Token salvato"
+  );
+
+}
+
+function getGitHubToken(){
+
+  return localStorage.getItem(
+    "TEMERIA_GITHUB_TOKEN"
+  ) || "";
+
+}
+
+/* =========================
+   SLUG
+========================= */
+
+function createCardSlug(title){
+
+  return String(title || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+
+}
+
+/* =========================
+   BASE64 SAFE
+========================= */
+
+function safeBase64Unicode(str){
+
+  return btoa(
+    unescape(
+      encodeURIComponent(str)
+    )
+  );
+
+}
+
+/* =========================
+   REAL CARD URL
+========================= */
+
+function getPublishedCardURL(fileName){
+
+  return `https://${TEMERIA_GITHUB.user}.github.io/${TEMERIA_GITHUB.repo}/${TEMERIA_GITHUB.cardsFolder}/${fileName}`;
+
+}
+
+/* =========================
+   BUILD FINAL HTML
+========================= */
+
+function buildPublishedCardHTML(){
+
+  const cardHTML =
+    buildCardHTML();
+
+  const rawTitle =
+
+    getVal("titolo").trim()
+
+    || "temeria-card";
+
+  const currentImage =
+
+    getVal("gifurl").trim()
+
+    || `${getPublicBaseURL()}assets/og/temeria-og.jpg`;
+
+  return `
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+${escapeHTML(rawTitle)}
+</title>
+
+${buildOGMeta({
+
+  title: rawTitle,
+
+  description:
+    getVal("frase").trim()
+    || "Card creata con Temeria Media Forge",
+
+  image: currentImage,
+
+  url: ""
+
+})}
+
+<link
+href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap"
+rel="stylesheet"
+>
+
+<style>
+
+body{
+  margin:0;
+  padding:30px;
+  background:#070a12;
+  font-family:Orbitron,sans-serif;
+}
+
+button,
+a{
+  font-family:Orbitron,sans-serif;
+}
+
+</style>
+
+</head>
+
+<body>
+
+${cardHTML}
+
+</body>
+</html>
+`;
+
+}
+
+/* =========================
+   PUBLISH REAL CARD
+========================= */
+
+async function publishCardToGitHub(){
+
+  try{
+
+    const token =
+      getGitHubToken();
+
+    if(!token){
+
+      alert(
+        "⚠️ Salva prima il GitHub Token"
+      );
+
+      return;
+
+    }
+
+    const rawTitle =
+
+      getVal("titolo").trim()
+
+      || "temeria-card";
+
+    const slug =
+      createCardSlug(
+        rawTitle
+      );
+
+    const fileName =
+      `${slug}.html`;
+
+    const html =
+      buildPublishedCardHTML();
+
+    const path =
+      `${TEMERIA_GITHUB.cardsFolder}/${fileName}`;
+
+    const apiURL =
+`https://api.github.com/repos/${TEMERIA_GITHUB.user}/${TEMERIA_GITHUB.repo}/contents/${path}`;
+
+    const response =
+      await fetch(apiURL,{
+
+        method:"PUT",
+
+        headers:{
+
+          Authorization:
+            `Bearer ${token}`,
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+        body:JSON.stringify({
+
+          message:
+            `✨ Publish ${fileName}`,
+
+          content:
+            safeBase64Unicode(html),
+
+          branch:
+            TEMERIA_GITHUB.branch
+
+        })
+
+      });
+
+    const data =
+      await response.json();
+
+    console.log(data);
+
+    if(data.content){
+
+      const liveURL =
+        getPublishedCardURL(
+          fileName
+        );
+
+      window.currentLiveCardURL =
+        liveURL;
+
+      safeCopyText(
+        liveURL
+      );
+
+      alert(
+`🚀 Card pubblicata!
+
+${liveURL}`
+      );
+
+      window.open(
+        liveURL,
+        "_blank"
+      );
+
+    }else{
+
+      console.error(data);
+
+      alert(
+        "❌ Errore Publish"
+      );
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(
+      "❌ Publish fallito"
+    );
+
+  }
+
+}

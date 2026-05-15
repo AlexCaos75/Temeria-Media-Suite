@@ -274,7 +274,13 @@ ${cardHTML}
 </body>
 </html>
 `;
+downloadTextFile(
+  `${fileName}.html`,
+  finalHTML,
+  "text/html"
+);
 
+}
 /* =========================
    SHARE HELPERS
 ========================= */

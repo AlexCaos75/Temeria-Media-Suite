@@ -589,31 +589,91 @@ async function publishCardToGitHub(){
     const apiURL =
       `https://api.github.com/repos/${TEMERIA_GITHUB.user}/${TEMERIA_GITHUB.repo}/contents/${path}`;
 
+    /* =========================
+       CHECK FILE ESISTENTE
+    ========================== */
+
+    let existingSHA = null;
+
+    try{
+
+      const checkResponse =
+        await fetch(apiURL,{
+
+          headers:{
+            Authorization:
+              `Bearer ${token}`
+          }
+
+        });
+
+      if(checkResponse.ok){
+
+        const existingData =
+          await checkResponse.json();
+
+        existingSHA =
+          existingData.sha;
+
+      }
+
+    }catch(e){
+
+      console.log(
+        "Nuovo file GitHub"
+      );
+
+    }
+
+    /* =========================
+       BODY REQUEST
+    ========================== */
+
+    const bodyData = {
+
+      message:
+        `✨ Publish ${fileName}`,
+
+      content:
+        safeBase64Unicode(html),
+
+      branch:
+        TEMERIA_GITHUB.branch
+
+    };
+
+    /* =========================
+       UPDATE FILE ESISTENTE
+    ========================== */
+
+    if(existingSHA){
+
+      bodyData.sha =
+        existingSHA;
+
+    }
+
+    /* =========================
+       UPLOAD GITHUB
+    ========================== */
+
     const response =
       await fetch(apiURL,{
 
         method:"PUT",
 
         headers:{
+
           Authorization:
             `Bearer ${token}`,
 
           "Content-Type":
             "application/json"
+
         },
 
-        body:JSON.stringify({
-
-          message:
-            `✨ Publish ${fileName}`,
-
-          content:
-            safeBase64Unicode(html),
-
-          branch:
-            TEMERIA_GITHUB.branch
-
-        })
+        body:
+          JSON.stringify(bodyData)
 
       });
 
@@ -621,9 +681,11 @@ async function publishCardToGitHub(){
       await response.json();
 
     console.log(data);
-alert(
-  JSON.stringify(data,null,2)
-);
+
+    /* =========================
+       SUCCESS
+    ========================== */
+
     if(data.content){
 
       const liveURL =
@@ -634,10 +696,12 @@ alert(
       window.currentLiveCardURL =
         liveURL;
 
-      safeCopyText(liveURL);
+      safeCopyText(
+        liveURL
+      );
 
       alert(
-        `🚀 Card pubblicata!\n${liveURL}`
+        `🚀 Card pubblicata!\n\n${liveURL}`
       );
 
       window.open(
@@ -650,7 +714,7 @@ alert(
       console.error(data);
 
       alert(
-        "❌ Errore pubblicazione"
+        "❌ Errore pubblicazione GitHub"
       );
 
     }

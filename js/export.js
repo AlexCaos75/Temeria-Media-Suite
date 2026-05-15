@@ -551,7 +551,7 @@ ${cardHTML}
 }
 
 /* =========================
-   PUBLISH REAL CARD
+   PUBBLICARE UNA VERA CARD
 ========================= */
 
 async function publishCardToGitHub(){
@@ -564,23 +564,18 @@ async function publishCardToGitHub(){
     if(!token){
 
       alert(
-        "⚠️ Salva prima il GitHub Token"
+        "⚠️ Salva prima il token GitHub"
       );
 
       return;
-
     }
 
     const rawTitle =
-
       getVal("titolo").trim()
-
       || "temeria-card";
 
     const slug =
-      createCardSlug(
-        rawTitle
-      );
+      createCardSlug(rawTitle);
 
     const fileName =
       `${slug}.html`;
@@ -592,7 +587,7 @@ async function publishCardToGitHub(){
       `${TEMERIA_GITHUB.cardsFolder}/${fileName}`;
 
     const apiURL =
-`https://api.github.com/repos/${TEMERIA_GITHUB.user}/${TEMERIA_GITHUB.repo}/contents/${path}`;
+      `https://api.github.com/repos/${TEMERIA_GITHUB.user}/${TEMERIA_GITHUB.repo}/contents/${path}`;
 
     const response =
       await fetch(apiURL,{
@@ -600,13 +595,11 @@ async function publishCardToGitHub(){
         method:"PUT",
 
         headers:{
-
           Authorization:
             `Bearer ${token}`,
 
           "Content-Type":
             "application/json"
-
         },
 
         body:JSON.stringify({
@@ -639,14 +632,10 @@ async function publishCardToGitHub(){
       window.currentLiveCardURL =
         liveURL;
 
-      safeCopyText(
-        liveURL
-      );
+      safeCopyText(liveURL);
 
       alert(
-`🚀 Card pubblicata!
-
-${liveURL}`
+        `🚀 Card pubblicata!\n${liveURL}`
       );
 
       window.open(
@@ -659,7 +648,7 @@ ${liveURL}`
       console.error(data);
 
       alert(
-        "❌ Errore Publish"
+        "❌ Errore pubblicazione"
       );
 
     }

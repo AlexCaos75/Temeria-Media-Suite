@@ -194,24 +194,47 @@
     return card;
   }
 
-  function buildOGMeta(state, url){
-    const title = state.content.title || "Temeria Card";
-    const desc = state.content.phrase || "Card creata con Temeria Media Forge";
-    const img = state.media.mainImage && !state.media.mainImage.startsWith("data:")
-      ? state.media.mainImage
-      : "https://alexcaos75.github.io/Temeria-Media-Suite/assets/og/temeria-og.jpg";
+function buildOGMeta(state, url){
 
-    return `
+  const title =
+    state.content.title || "Temeria Card";
+
+  const desc =
+    state.content.phrase ||
+    "Card creata con Temeria Media Forge";
+
+  const image = state.media.mainImage || "";
+
+  let img =
+    "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
+
+  if(
+    image &&
+    !image.startsWith("data:") &&
+    !image.startsWith("blob:")
+  ){
+    img = image.startsWith("http")
+      ? image
+      : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
+        image.replace(/^\/+/, "");
+  }
+
+  return `
 <meta property="og:title" content="${html(title)}">
 <meta property="og:description" content="${html(desc)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(url || "")}">
 <meta property="og:image" content="${esc(img)}">
+<meta property="og:image:secure_url" content="${esc(img)}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${html(title)}">
 <meta name="twitter:description" content="${html(desc)}">
 <meta name="twitter:image" content="${esc(img)}">`;
-  }
+}
 
   function buildStandaloneHTML(state, options = {}){
     const publicUrl = options.publicUrl || state.github.lastPublishedUrl || "";

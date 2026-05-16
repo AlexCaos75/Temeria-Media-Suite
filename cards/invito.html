@@ -92,75 +92,22 @@ button,a{font-family:Orbitron,Arial,sans-serif;}
     
 <video
   src="https://AlexCaos75.github.io/Temeria-Media-Suite/assets/video/invito.mp4"
-  controls
+  autoplay
+  loop
   playsinline
-  preload="metadata"
+  muted
+  preload="auto"
   style="
-    width:100%;
-    margin-top:25px;
-    border-radius:22px;
-    display:block;
-    box-shadow:0 0 30px rgba(0,0,0,.35);
+    position:fixed;
+    left:-9999px;
+    top:-9999px;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none;
   "
 ></video>
     
-<div class="temeria-audio-box"
-style="
-  margin-top:25px;
-  text-align:center;
-">
-
-  <audio
-    id="temeriaMP3_grs3gy5"
-    src="https://AlexCaos75.github.io/Temeria-Media-Suite/assets/audio/invito.mp3"
-    loop
-    preload="metadata"
-    style="display:none;"
-  ></audio>
-
-  <div style="
-    display:flex;
-    gap:14px;
-    justify-content:center;
-    flex-wrap:wrap;
-  ">
-
-    <button
-      type="button"
-      onclick="TemeriaPublicPlayer.mp3('temeriaMP3_grs3gy5','play')"
-      style="
-        padding:15px 28px;
-        border:none;
-        cursor:pointer;
-        border-radius:999px;
-        background:linear-gradient(90deg,#00f6ff,#6cff9f);
-        color:#020617;
-        font-weight:800;
-        font-size:17px;
-      "
-    >
-      ▶ PLAY
-    </button>
-
-    <button
-      type="button"
-      onclick="TemeriaPublicPlayer.mp3('temeriaMP3_grs3gy5','stop')"
-      style="
-        padding:15px 28px;
-        border:none;
-        cursor:pointer;
-        border-radius:999px;
-        background:linear-gradient(90deg,#ff0033,#ff6b6b);
-        color:white;
-        font-weight:800;
-        font-size:17px;
-      "
-    >
-      ⏹ STOP
-    </button>
-
-  </div>
-</div>
     <div style="margin-top:25px;text-align:center;"><a href="https://wa.me/?text=https%3A%2F%2FAlexCaos75.github.io%2FTemeria-Media-Suite%2Fcards%2Finvito.html" target="_blank" style="display:inline-block;padding:16px 34px;border-radius:999px;background:linear-gradient(90deg,#25d366,#4bf58a);color:white;text-decoration:none;font-size:18px;font-weight:bold;box-shadow:0 0 35px rgba(37,211,102,.28);">💬 CONDIVIDI WHATSAPP</a></div>
   </div>
 </div>
@@ -217,6 +164,36 @@ window.TemeriaPublicPlayer || {
 
     }
   },
+
+video:function(id,action){
+
+  var video =
+    document.getElementById(id);
+
+  if(!video)
+    return;
+
+  if(action === "play"){
+
+    video.play()
+    .catch(function(){
+
+      alert(
+        "Premi PLAY di nuovo: il browser ha bloccato l'autoplay."
+      );
+
+    });
+
+  }
+
+  if(action === "stop"){
+
+    video.pause();
+    video.currentTime = 0;
+
+  }
+},
+
 
   copy:function(text){
 

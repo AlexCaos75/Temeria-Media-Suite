@@ -1,6 +1,7 @@
+
 /* =========================================================
    TEMERIA MEDIA FORGE V4 - MEDIA ENGINE
-   GIF, video, MP3, YouTube invisibile o controllato
+   CLEAN YOUTUBE EDITION
 ========================================================= */
 
 (function(){
@@ -10,17 +11,35 @@
   function esc(v){ return E().escapeAttr(v); }
 
   function showByOutput(state, type){
+
     const mode = state.style.outputMode;
+
     if(mode === "minimal") return false;
-    if(type === "image" && mode === "music_focus") return false;
-    if(type === "video" && ["music_focus", "social_clean", "image_focus"].includes(mode)) return false;
-    if(type === "audio" && ["image_focus", "video_focus"].includes(mode)) return false;
+
+    if(type === "image" && mode === "music_focus")
+      return false;
+
+    if(type === "video" &&
+      ["music_focus","social_clean","image_focus"].includes(mode))
+      return false;
+
+    if(type === "audio" &&
+      ["image_focus","video_focus"].includes(mode))
+      return false;
+
     return true;
   }
 
+  /* =========================================================
+     MAIN IMAGE
+  ========================================================= */
+
   function buildMainImage(state){
+
     const src = state.media.mainImage;
-    if(!src || !showByOutput(state, "image")) return "";
+
+    if(!src || !showByOutput(state,"image"))
+      return "";
 
     const img = `
 <img
@@ -32,9 +51,11 @@
     width:100%;
     border-radius:22px;
     margin-top:25px;
-    box-shadow:0 0 35px rgba(0,0,0,.35),0 0 35px ${esc(state.theme.accent3)}55;
     display:block;
     object-fit:cover;
+    box-shadow:
+      0 0 35px rgba(0,0,0,.35),
+      0 0 35px ${esc(state.theme.accent3)}55;
   "
 >`;
 
@@ -43,8 +64,14 @@
       : img;
   }
 
+  /* =========================================================
+     LOGO
+  ========================================================= */
+
   function buildLogo(state){
+
     const src = state.media.logo;
+
     if(!src) return "";
 
     const img = `
@@ -66,13 +93,25 @@
       : img;
 
     return `
-<div style="margin-top:20px;display:flex;justify-content:center;">
+<div style="
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+">
   ${body}
 </div>`;
   }
 
+  /* =========================================================
+     VIDEO
+  ========================================================= */
+
   function buildVideo(state){
-    if(!state.media.videoUrl || !showByOutput(state, "video")) return "";
+
+    if(!state.media.videoUrl ||
+      !showByOutput(state,"video"))
+      return "";
+
     return `
 <video
   src="${esc(state.media.videoUrl)}"
@@ -83,115 +122,362 @@
     width:100%;
     margin-top:25px;
     border-radius:22px;
-    box-shadow:0 0 30px rgba(0,0,0,.35);
     display:block;
+    box-shadow:0 0 30px rgba(0,0,0,.35);
   "
 ></video>`;
   }
 
+  /* =========================================================
+     CLEAN YOUTUBE URL
+  ========================================================= */
+
+  function buildYoutubeURL(id, autoplay = false){
+
+    return `https://www.youtube.com/embed/${id}?` +
+
+      `enablejsapi=1` +
+      `&playsinline=1` +
+      `&loop=1` +
+      `&playlist=${id}` +
+      `&controls=0` +
+      `&modestbranding=1` +
+      `&rel=0` +
+      `&iv_load_policy=3` +
+      `&disablekb=1` +
+      `&fs=0` +
+      `&origin=${encodeURIComponent(location.origin)}` +
+
+      (autoplay
+        ? `&autoplay=1&mute=0`
+        : ``);
+  }
+
+  /* =========================================================
+     YOUTUBE HIDDEN
+  ========================================================= */
+
   function buildYoutubeHidden(id){
+
     if(!id) return "";
+
     const safe = encodeURIComponent(id);
+
     return `
-<div style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+<div style="
+  position:fixed;
+  left:-9999px;
+  top:-9999px;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none;
+">
   <iframe
     width="1"
     height="1"
     allow="autoplay; encrypted-media"
+    referrerpolicy="strict-origin-when-cross-origin"
     frameborder="0"
-    src="https://www.youtube-nocookie.com/embed/${safe}?autoplay=1&mute=0&playsinline=1&loop=1&playlist=${safe}">
+    src="${buildYoutubeURL(safe,true)}">
   </iframe>
 </div>`;
   }
 
+  /* =========================================================
+     YOUTUBE BUTTONS
+  ========================================================= */
+
   function buildYoutubeButtons(id){
+
     if(!id) return "";
-    const safe = encodeURIComponent(id);
-    const uid = "temeriaYT_" + Math.random().toString(36).slice(2,9);
+
+    const safe =
+      encodeURIComponent(id);
+
+    const uid =
+      "temeriaYT_" +
+      Math.random()
+      .toString(36)
+      .slice(2,9);
 
     return `
-<div class="temeria-audio-box" style="margin-top:25px;text-align:center;">
-  <div id="${uid}_wrap" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+<div class="temeria-audio-box"
+style="
+  margin-top:25px;
+  text-align:center;
+">
+
+  <div
+    id="${uid}_wrap"
+    style="
+      position:fixed;
+      left:-9999px;
+      top:-9999px;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      opacity:0;
+      pointer-events:none;
+    "
+  >
+
     <iframe
       id="${uid}"
       width="1"
       height="1"
       allow="autoplay; encrypted-media"
+      referrerpolicy="strict-origin-when-cross-origin"
       frameborder="0"
-      src="https://www.youtube-nocookie.com/embed/${safe}?enablejsapi=1&playsinline=1&loop=1&playlist=${safe}">
+      src="${buildYoutubeURL(safe,false)}">
     </iframe>
+
   </div>
 
-  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-    <button type="button" onclick="TemeriaPublicPlayer.yt('${uid}','playVideo')" style="padding:15px 28px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#00f6ff,#6cff9f);color:#020617;font-weight:800;font-size:17px;box-shadow:0 0 25px rgba(0,246,255,.28);">▶ PLAY</button>
-    <button type="button" onclick="TemeriaPublicPlayer.yt('${uid}','pauseVideo')" style="padding:15px 28px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#ff0033,#ff6b6b);color:white;font-weight:800;font-size:17px;box-shadow:0 0 25px rgba(255,0,80,.28);">⏹ STOP</button>
+  <div style="
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  ">
+
+    <button
+      type="button"
+      onclick="TemeriaPublicPlayer.yt('${uid}','playVideo')"
+      style="
+        padding:15px 28px;
+        border:none;
+        cursor:pointer;
+        border-radius:999px;
+        background:linear-gradient(90deg,#00f6ff,#6cff9f);
+        color:#020617;
+        font-weight:800;
+        font-size:17px;
+        box-shadow:0 0 25px rgba(0,246,255,.28);
+      "
+    >
+      ▶ PLAY
+    </button>
+
+    <button
+      type="button"
+      onclick="TemeriaPublicPlayer.yt('${uid}','pauseVideo')"
+      style="
+        padding:15px 28px;
+        border:none;
+        cursor:pointer;
+        border-radius:999px;
+        background:linear-gradient(90deg,#ff0033,#ff6b6b);
+        color:white;
+        font-weight:800;
+        font-size:17px;
+        box-shadow:0 0 25px rgba(255,0,80,.28);
+      "
+    >
+      ⏹ STOP
+    </button>
+
   </div>
 </div>`;
   }
+
+  /* =========================================================
+     MP3 PLAYER
+  ========================================================= */
 
   function buildMP3(state){
-    if(!state.media.mp3Url) return "";
-    const id = "temeriaMP3_" + Math.random().toString(36).slice(2,9);
+
+    if(!state.media.mp3Url)
+      return "";
+
+    const id =
+      "temeriaMP3_" +
+      Math.random()
+      .toString(36)
+      .slice(2,9);
+
     return `
-<div class="temeria-audio-box" style="margin-top:25px;text-align:center;">
-  <audio id="${id}" src="${esc(state.media.mp3Url)}" loop preload="metadata" style="display:none;"></audio>
-  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-    <button type="button" onclick="TemeriaPublicPlayer.mp3('${id}','play')" style="padding:15px 28px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#00f6ff,#6cff9f);color:#020617;font-weight:800;font-size:17px;box-shadow:0 0 25px rgba(0,246,255,.28);">▶ PLAY</button>
-    <button type="button" onclick="TemeriaPublicPlayer.mp3('${id}','stop')" style="padding:15px 28px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#ff0033,#ff6b6b);color:white;font-weight:800;font-size:17px;box-shadow:0 0 25px rgba(255,0,80,.28);">⏹ STOP</button>
+<div class="temeria-audio-box"
+style="
+  margin-top:25px;
+  text-align:center;
+">
+
+  <audio
+    id="${id}"
+    src="${esc(state.media.mp3Url)}"
+    loop
+    preload="metadata"
+    style="display:none;"
+  ></audio>
+
+  <div style="
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  ">
+
+    <button
+      type="button"
+      onclick="TemeriaPublicPlayer.mp3('${id}','play')"
+      style="
+        padding:15px 28px;
+        border:none;
+        cursor:pointer;
+        border-radius:999px;
+        background:linear-gradient(90deg,#00f6ff,#6cff9f);
+        color:#020617;
+        font-weight:800;
+        font-size:17px;
+      "
+    >
+      ▶ PLAY
+    </button>
+
+    <button
+      type="button"
+      onclick="TemeriaPublicPlayer.mp3('${id}','stop')"
+      style="
+        padding:15px 28px;
+        border:none;
+        cursor:pointer;
+        border-radius:999px;
+        background:linear-gradient(90deg,#ff0033,#ff6b6b);
+        color:white;
+        font-weight:800;
+        font-size:17px;
+      "
+    >
+      ⏹ STOP
+    </button>
+
   </div>
 </div>`;
   }
 
+  /* =========================================================
+     AUDIO ROUTER
+  ========================================================= */
+
   function buildAudio(state){
-    if(!showByOutput(state, "audio")) return "";
+
+    if(!showByOutput(state,"audio"))
+      return "";
 
     if(state.media.audioMode === "yt_auto"){
-      return buildYoutubeHidden(state.media.youtubeAutoId || state.media.youtubeButtonId);
+
+      return buildYoutubeHidden(
+        state.media.youtubeAutoId ||
+        state.media.youtubeButtonId
+      );
+
     }
 
     if(state.media.audioMode === "yt_buttons"){
-      return buildYoutubeButtons(state.media.youtubeButtonId || state.media.youtubeAutoId);
+
+      return buildYoutubeButtons(
+        state.media.youtubeButtonId ||
+        state.media.youtubeAutoId
+      );
+
     }
 
     if(state.media.audioMode === "mp3"){
+
       return buildMP3(state);
+
     }
 
     return "";
   }
 
+  /* =========================================================
+     PUBLIC PLAYER
+  ========================================================= */
+
   function publicPlayerScript(){
+
     return `
 <script>
-window.TemeriaPublicPlayer = window.TemeriaPublicPlayer || {
-  yt: function(id, action){
-    var iframe = document.getElementById(id);
-    if(!iframe || !iframe.contentWindow) return;
-    iframe.contentWindow.postMessage(JSON.stringify({event:"command",func:action,args:[]}), "*");
+
+window.TemeriaPublicPlayer =
+window.TemeriaPublicPlayer || {
+
+  yt:function(id,action){
+
+    var iframe =
+      document.getElementById(id);
+
+    if(!iframe ||
+      !iframe.contentWindow)
+      return;
+
+    iframe.contentWindow.postMessage(
+      JSON.stringify({
+        event:"command",
+        func:action,
+        args:[]
+      }),
+      "*"
+    );
   },
-  mp3: function(id, action){
-    var audio = document.getElementById(id);
-    if(!audio) return;
+
+  mp3:function(id,action){
+
+    var audio =
+      document.getElementById(id);
+
+    if(!audio)
+      return;
+
     if(action === "play"){
-      audio.play().catch(function(){ alert("Premi PLAY di nuovo: il browser ha bloccato l'audio automatico."); });
+
+      audio.play()
+      .catch(function(){
+
+        alert(
+          "Premi PLAY di nuovo: il browser ha bloccato l'audio automatico."
+        );
+
+      });
+
     }
+
     if(action === "stop"){
+
       audio.pause();
       audio.currentTime = 0;
+
     }
   },
-  copy: function(text){
-    if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+
+  copy:function(text){
+
+    if(navigator.clipboard){
+
+      navigator.clipboard.writeText(text);
+
+    }
   }
 };
+
 <\/script>`;
   }
 
+  /* =========================================================
+     EXPORT
+  ========================================================= */
+
   window.TemeriaMedia = {
+
     buildMainImage,
     buildLogo,
     buildVideo,
     buildAudio,
     publicPlayerScript
+
   };
+
 })();

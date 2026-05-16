@@ -233,7 +233,6 @@ style="
   autoplay
   loop
   playsinline
-  muted
   preload="auto"
   style="
     position:fixed;

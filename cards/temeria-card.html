@@ -1,335 +1,97 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temeria Card</title>
+<link rel="icon" href="data:,">
 
-<title>Temeria Live</title>
-
+<meta property="og:title" content="Temeria Card">
+<meta property="og:description" content="Card creata con Temeria Media Forge">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://AlexCaos75.github.io/Temeria-Media-Suite/cards/temeria-card.html?v=1778921815905">
+<meta property="og:image" content="https://alexcaos75.github.io/Temeria-Media-Suite/assets/og/temeria-og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Temeria Card">
+<meta name="twitter:description" content="Card creata con Temeria Media Forge">
+<meta name="twitter:image" content="https://alexcaos75.github.io/Temeria-Media-Suite/assets/og/temeria-og.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<!-- OPEN GRAPH -->
-
-<meta property="og:title"
-content="Temeria Live">
-
-<meta property="og:description"
-content="La prima card dinamica interplanetaria 💋">
-
-<meta property="og:image"
-content="https://i.postimg.cc/x8FrS9TM/Nyang-Piumy-(1).gif">
-
-<meta property="og:type"
-content="website">
-
-<meta property="og:url"
-content="https://alexcaos75.github.io/Temeria-Media-Suite/cards/temeria-live.html">
-
-<meta name="twitter:card"
-content="summary_large_image">
-
-<meta name="twitter:image"
-content="https://i.postimg.cc/x8FrS9TM/Nyang-Piumy-(1).gif">
-
 <style>
-
-*{
-box-sizing:border-box;
-}
-
+*{box-sizing:border-box;}
 body{
-
-margin:0;
-padding:30px;
-
-min-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-font-family:Orbitron,sans-serif;
-
-background:
-radial-gradient(
-circle at top,
-#162033,
-#070a12 60%
-);
-
-overflow-x:hidden;
-
+  margin:0;
+  min-height:100vh;
+  padding:30px;
+  background:radial-gradient(circle at top,#182033,#070a12 60%,#020617);
+  color:white;
+  font-family:Orbitron,Arial,sans-serif;
 }
-
-/* CARD */
-
-.temeria-card{
-
-position:relative;
-
-width:92%;
-max-width:900px;
-
-padding:35px;
-
-border-radius:28px;
-
-background:
-linear-gradient(
-180deg,
-#111827,
-#0f172a
-);
-
-text-align:center;
-
-color:white;
-
-overflow:hidden;
-
-border:
-1px solid rgba(0,255,255,.12);
-
-box-shadow:
-0 0 35px rgba(0,255,255,.10),
-0 0 80px rgba(180,0,255,.08),
-0 0 120px rgba(0,0,0,.55);
-
-backdrop-filter:blur(10px);
-
-}
-
-/* TITLE */
-
-.temeria-title{
-
-font-size:42px;
-font-weight:800;
-
-letter-spacing:4px;
-
-margin-bottom:25px;
-
-text-shadow:
-0 0 20px rgba(255,255,255,.20),
-0 0 40px rgba(0,255,255,.18);
-
-}
-
-/* TEXT */
-
-.temeria-text{
-
-font-size:22px;
-line-height:1.8;
-
-max-width:720px;
-
-margin:auto;
-
-opacity:.96;
-
-text-shadow:
-0 0 10px rgba(255,255,255,.08);
-
-}
-
-/* GIF */
-
-.temeria-gif{
-
-width:100%;
-
-margin-top:30px;
-
-border-radius:24px;
-
-display:block;
-
-box-shadow:
-0 0 40px rgba(0,0,0,.35),
-0 0 60px rgba(0,255,255,.08);
-
-}
-
-/* BUTTON */
-
-.temeria-btn-wrap{
-
-margin-top:30px;
-
-}
-
-.temeria-btn{
-
-display:inline-block;
-
-padding:18px 38px;
-
-border-radius:999px;
-
-background:
-linear-gradient(
-90deg,
-#00f6ff,
-#6cff9f
-);
-
-color:black;
-
-text-decoration:none;
-
-font-size:18px;
-font-weight:700;
-
-letter-spacing:1px;
-
-box-shadow:
-0 0 35px rgba(0,255,255,.25);
-
-transition:.3s;
-
-}
-
-.temeria-btn:hover{
-
-transform:scale(1.04);
-
-box-shadow:
-0 0 45px rgba(0,255,255,.40);
-
-}
-
-/* GLOW */
-
-.temeria-card::before{
-
-content:"";
-
-position:absolute;
-
-inset:-120px;
-
-background:
-radial-gradient(
-circle,
-rgba(0,255,255,.10),
-transparent 60%
-);
-
-pointer-events:none;
-
-animation:pulseGlow 6s infinite;
-
-}
-
-@keyframes pulseGlow{
-
-0%{
-transform:scale(1);
-opacity:.55;
-}
-
-50%{
-transform:scale(1.15);
-opacity:.85;
-}
-
-100%{
-transform:scale(1);
-opacity:.55;
-}
-
-}
-
-/* MOBILE */
-
+button,a{font-family:Orbitron,Arial,sans-serif;}
 @media(max-width:700px){
-
-.temeria-title{
-font-size:32px;
+  body{padding:14px;}
+  .temeria-card{width:96%!important;padding:22px!important;}
+  .temeria-card h1{font-size:28px!important;}
 }
-
-.temeria-text{
-font-size:18px;
-}
-
-body{
-padding:18px;
-}
-
-.temeria-card{
-padding:24px;
-}
-
-}
-
 </style>
-
 </head>
-
 <body>
 
-<div class="temeria-card">
+<div class="temeria-public-root" style="position:relative;max-width:1200px;margin:auto;padding-top:30px;">
+  <div class="temeria-card" style="
+    position:relative;
+    padding:30px;
+    border-radius:26px;
+    background:linear-gradient(135deg,#070a12,#7fffd9,#b06cff);
+    color:#eafcff;
+    max-width:760px;
+    min-height:auto;
+    width:92%;
+    margin:auto;
+    box-sizing:border-box;
+    text-align:center;
+    overflow:visible;
+    box-shadow:0 0 40px rgba(0,0,0,.35),0 0 55px #b06cff;
+    
+  ">
+    
 
-<div class="temeria-title">
-Temeria Live
+    <h1 style="font-size:34px;margin-bottom:20px;font-family:Orbitron,Arial,sans-serif;letter-spacing:2px;color:#00f6ff;text-shadow:0 0 20px #00f6ff,0 0 55px #b06cff;"></h1>
+
+    <div style="font-size:22px;line-height:1.7;max-width:700px;margin:auto;color:#eafcff;font-style:normal;letter-spacing:normal;text-shadow:none;"></div>
+
+    
+    
+    
+    
+    
+    
+    
+    <div style="margin-top:25px;text-align:center;"><button type="button" onclick="TemeriaPublicPlayer.copy('https://AlexCaos75.github.io/Temeria-Media-Suite/cards/temeria-card.html?v=1778921815905')" style="padding:16px 34px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#00f6ff,#b06cff);color:white;font-size:18px;font-weight:bold;box-shadow:0 0 35px rgba(176,108,255,.28);">🔗 COPIA LINK</button></div>
+  </div>
 </div>
 
-<div class="temeria-text">
-
-È una melodia notturna,<br>
-dedicata a chi ascolta dal balcone del cielo.<br>
-Dove TGIF incontra la luna,<br>
-nasce la notte dei sogni.
-
-</div>
-
-<img
-class="temeria-gif"
-src="https://i.postimg.cc/x8FrS9TM/Nyang-Piumy-(1).gif"
->
-
-<div class="temeria-btn-wrap">
-
-<a
-class="temeria-btn"
-href="https://youtube.com/watch?v=pa4mTtiy4Lw"
-target="_blank">
-
-▶ APRI TEMERIA
-
-</a>
-
-</div>
-
-<!-- PLAYER INVISIBILE -->
-
-<div style="
-position:fixed;
-left:-9999px;
-top:-9999px;
-width:1px;
-height:1px;
-opacity:0;
-pointer-events:none;
-">
-
-<iframe
-width="1"
-height="1"
-allow="autoplay"
-frameborder="0"
-src="
-https://www.youtube.com/embed/pa4mTtiy4Lw?autoplay=1&mute=0&loop=1&playlist=pa4mTtiy4Lw
-">
-</iframe>
-
-</div>
-
-</div>
-
+<script>
+window.TemeriaPublicPlayer = window.TemeriaPublicPlayer || {
+  yt: function(id, action){
+    var iframe = document.getElementById(id);
+    if(!iframe || !iframe.contentWindow) return;
+    iframe.contentWindow.postMessage(JSON.stringify({event:"command",func:action,args:[]}), "*");
+  },
+  mp3: function(id, action){
+    var audio = document.getElementById(id);
+    if(!audio) return;
+    if(action === "play"){
+      audio.play().catch(function(){ alert("Premi PLAY di nuovo: il browser ha bloccato l'audio automatico."); });
+    }
+    if(action === "stop"){
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  },
+  copy: function(text){
+    if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+  }
+};
+</script>
 </body>
 </html>

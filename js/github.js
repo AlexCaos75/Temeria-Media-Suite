@@ -125,7 +125,8 @@
       token
     );
 
-    state.media.mainImage = publicImageUrl;
+    sstate.media.mainImage = publicImageUrl;
+state.github.ogImageUrl = publicImageUrl;
 
     return state;
   }

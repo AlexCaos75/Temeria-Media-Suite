@@ -7,7 +7,8 @@
   "use strict";
 
   const PUBLIC_BASE_URL = "https://alexcaos75.github.io/Temeria-Media-Suite/";
-  const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + "assets/thumb/invito.jpg";
+  const THUMB_FOLDER = "assets/thumb/";
+  const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + THUMB_FOLDER + "default.jpg";
 
   function slugify(text){
     return String(text || "temeria-card")
@@ -45,27 +46,45 @@
     return PUBLIC_BASE_URL + url.replace(/^\/+/, "");
   }
 
-  function buildOGMeta(state){
+  function getCardSlug(state){
+    const content = state?.content || {};
+    return slugify(
+      content.slug ||
+      content.title ||
+      "temeria-card"
+    );
+  }
+
+  function getDynamicOGImage(state){
     const content = state?.content || {};
     const github = state?.github || {};
+    const slug = getCardSlug(state);
 
-    const title = content.title || "Temeria Media Forge";
-    const description =
-      content.subtitle ||
-      content.text ||
-      "Card creata con Temeria Media Forge";
-
-    const slug = slugify(title);
     const preferredImage =
       github.ogImageUrl ||
       content.ogImage ||
       content.publicImage ||
-     `assets/thumb/${slug}.jpg`;
+      THUMB_FOLDER + slug + ".jpg";
 
-    const ogImage = normalizePublicImage(preferredImage);
+    return normalizePublicImage(preferredImage);
+  }
+
+  function buildOGMeta(state){
+    const content = state?.content || {};
+
+    const title = content.title || "Temeria Media Forge";
+
+    const description =
+      content.subtitle ||
+      content.description ||
+      content.text ||
+      "Card creata con Temeria Media Forge";
+
+    const ogImage = getDynamicOGImage(state);
 
     return `
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Temeria Media Forge">
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:image" content="${ogImage}">
@@ -86,8 +105,8 @@
 
     html = String(html || "");
 
-    html = html.replace(/<meta\s+property=["']og:[\s\S]*?>/gi, "");
-    html = html.replace(/<meta\s+name=["']twitter:[\s\S]*?>/gi, "");
+    html = html.replace(/<meta\s+property=["']og:[^>]*>/gi, "");
+    html = html.replace(/<meta\s+name=["']twitter:[^>]*>/gi, "");
 
     if(html.includes("</head>")){
       return html.replace("</head>", "\n" + ogMeta + "\n</head>");
@@ -109,7 +128,8 @@
 
   function exportPublicCard(){
     const state = window.TemeriaForge.collectState();
-    const fileName = slugify(state.content.title) + ".html";
+    const slug = getCardSlug(state);
+    const fileName = slug + ".html";
 
     let html = window.TemeriaRenderer.buildStandaloneHTML(state);
     html = injectOGMeta(html, state);
@@ -140,10 +160,12 @@
   function shareCurrentCard(){
     const state = window.TemeriaForge.collectState();
     const url = state.github.lastPublishedUrl;
+
     if(!url){
       alert("Prima pubblica la card su GitHub: il link locale non è pubblico per WhatsApp/Facebook.");
       return "";
     }
+
     window.TemeriaForge.safeCopyText(url);
     alert("Link pubblico copiato!\n\n" + url);
     return url;
@@ -155,7 +177,9 @@
     slugify,
     buildOGMeta,
     injectOGMeta,
-    normalizePublicImage
+    normalizePublicImage,
+    getDynamicOGImage,
+    getCardSlug
   };
 
   window.exportPublicCard = exportPublicCard;

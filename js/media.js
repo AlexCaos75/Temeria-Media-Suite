@@ -482,37 +482,42 @@ style="
      AUDIO ROUTER
   ========================================================= */
 
-  function buildAudio(state){
+ function buildAudio(state){
 
-    if(!showByOutput(state,"audio"))
-      return "";
-
-    if(state.media.audioMode === "yt_auto"){
-
-      return buildYoutubeHidden(
-        state.media.youtubeAutoId ||
-        state.media.youtubeButtonId
-      );
-
-    }
-
-    if(state.media.audioMode === "yt_buttons"){
-
-      return buildYoutubeButtons(
-        state.media.youtubeButtonId ||
-        state.media.youtubeAutoId
-      );
-
-    }
-
-    if(state.media.audioMode === "mp3"){
-
-      return buildMP3(state);
-
-    }
-
+  /*
+    Se è presente un video MP4, l'audio separato viene disattivato.
+    Così non compaiono tasti YouTube/MP3 doppi o inutili.
+  */
+  if(state.media.videoUrl){
     return "";
   }
+
+  if(!showByOutput(state,"audio"))
+    return "";
+
+  if(state.media.audioMode === "none")
+    return "";
+
+  if(state.media.audioMode === "yt_auto"){
+    return buildYoutubeHidden(
+      state.media.youtubeAutoId ||
+      state.media.youtubeButtonId
+    );
+  }
+
+  if(state.media.audioMode === "yt_buttons"){
+    return buildYoutubeButtons(
+      state.media.youtubeButtonId ||
+      state.media.youtubeAutoId
+    );
+  }
+
+  if(state.media.audioMode === "mp3"){
+    return buildMP3(state);
+  }
+
+  return "";
+}
 
   /* =========================================================
      PUBLIC PLAYER
@@ -573,7 +578,7 @@ window.TemeriaPublicPlayer || {
 
     }
   },
-  
+
 video:function(id,action){
 
   var video =
@@ -602,6 +607,8 @@ video:function(id,action){
 
   }
 },
+
+
   copy:function(text){
 
     if(navigator.clipboard){

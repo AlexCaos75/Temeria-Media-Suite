@@ -97,31 +97,13 @@ style="
   text-align:center;
 ">
 
-  <div
-    id="temeriaYT_5wyqyrv_wrap"
-    style="
-      position:fixed;
-      left:-9999px;
-      top:-9999px;
-      width:1px;
-      height:1px;
-      overflow:hidden;
-      opacity:0;
-      pointer-events:none;
-    "
-  >
-
-    <iframe
-      id="temeriaYT_5wyqyrv"
-      width="1"
-      height="1"
-      allow="autoplay; encrypted-media"
-      referrerpolicy="strict-origin-when-cross-origin"
-      frameborder="0"
-      src="https://www.youtube.com/embed/1ZYbU82GVz4?enablejsapi=1&playsinline=1&loop=1&playlist=1ZYbU82GVz4&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&fs=0&origin=https%3A%2F%2Falexcaos75.github.io">
-    </iframe>
-
-  </div>
+  <audio
+    id="temeriaMP3_4a41kds"
+    src="https://AlexCaos75.github.io/Temeria-Media-Suite/assets/audio/invito.mp3"
+    loop
+    preload="metadata"
+    style="display:none;"
+  ></audio>
 
   <div style="
     display:flex;
@@ -132,7 +114,7 @@ style="
 
     <button
       type="button"
-      onclick="TemeriaPublicPlayer.yt('temeriaYT_5wyqyrv','playVideo')"
+      onclick="TemeriaPublicPlayer.mp3('temeriaMP3_4a41kds','play')"
       style="
         padding:15px 28px;
         border:none;
@@ -142,7 +124,6 @@ style="
         color:#020617;
         font-weight:800;
         font-size:17px;
-        box-shadow:0 0 25px rgba(0,246,255,.28);
       "
     >
       ▶ PLAY
@@ -150,7 +131,7 @@ style="
 
     <button
       type="button"
-      onclick="TemeriaPublicPlayer.yt('temeriaYT_5wyqyrv','pauseVideo')"
+      onclick="TemeriaPublicPlayer.mp3('temeriaMP3_4a41kds','stop')"
       style="
         padding:15px 28px;
         border:none;
@@ -160,7 +141,6 @@ style="
         color:white;
         font-weight:800;
         font-size:17px;
-        box-shadow:0 0 25px rgba(255,0,80,.28);
       "
     >
       ⏹ STOP

@@ -623,17 +623,79 @@ video:function(id,action){
   }
 
   /* =========================================================
-     EXPORT
-  ========================================================= */
+   PLAYER GLOBALE PER PREVIEW LIVE
+========================================================= */
 
-  window.TemeriaMedia = {
+window.TemeriaPublicPlayer =
+window.TemeriaPublicPlayer || {
 
-    buildMainImage,
-    buildLogo,
-    buildVideo,
-    buildAudio,
-    publicPlayerScript
+  yt:function(id,action){
 
-  };
+    var iframe =
+      document.getElementById(id);
+
+    if(!iframe || !iframe.contentWindow)
+      return;
+
+    iframe.contentWindow.postMessage(
+      JSON.stringify({
+        event:"command",
+        func:action,
+        args:[]
+      }),
+      "*"
+    );
+  },
+
+  mp3:function(id,action){
+
+    var audio =
+      document.getElementById(id);
+
+    if(!audio)
+      return;
+
+    if(action === "play"){
+      audio.play().catch(function(){});
+    }
+
+    if(action === "stop"){
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  },
+
+  video:function(id,action){
+
+    var video =
+      document.getElementById(id);
+
+    if(!video)
+      return;
+
+    if(action === "play"){
+      video.play().catch(function(){});
+    }
+
+    if(action === "stop"){
+      video.pause();
+      video.currentTime = 0;
+    }
+  }
+};
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+window.TemeriaMedia = {
+
+  buildMainImage,
+  buildLogo,
+  buildVideo,
+  buildAudio,
+  publicPlayerScript
+
+};
 
 })();

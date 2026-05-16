@@ -1,10 +1,13 @@
 /* =========================================================
    TEMERIA MEDIA FORGE V4 - EXPORT ENGINE
-   Export standalone senza doppio player e senza doppio renderer
+   Export standalone + OG META WhatsApp safe
 ========================================================= */
 
 (function(){
   "use strict";
+
+  const PUBLIC_BASE_URL = "https://alexcaos75.github.io/Temeria-Media-Suite/";
+  const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + "assets/thumb/invito.jpg";
 
   function slugify(text){
     return String(text || "temeria-card")
@@ -12,6 +15,85 @@
       .trim()
       .replace(/[^a-z0-9]+/g,"-")
       .replace(/^-+|-+$/g,"") || "temeria-card";
+  }
+
+  function escapeHtml(str){
+    return String(str || "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+
+  function normalizePublicImage(url){
+    url = String(url || "").trim();
+
+    if(
+      !url ||
+      url.startsWith("data:") ||
+      url.startsWith("blob:") ||
+      url.startsWith("localStorage")
+    ){
+      return DEFAULT_OG_IMAGE;
+    }
+
+    if(url.startsWith("http://") || url.startsWith("https://")){
+      return url;
+    }
+
+    return PUBLIC_BASE_URL + url.replace(/^\/+/, "");
+  }
+
+  function buildOGMeta(state){
+    const content = state?.content || {};
+    const github = state?.github || {};
+
+    const title = content.title || "Temeria Media Forge";
+    const description =
+      content.subtitle ||
+      content.text ||
+      "Card creata con Temeria Media Forge";
+
+    const slug = slugify(title);
+    const preferredImage =
+      github.ogImageUrl ||
+      content.ogImage ||
+      content.publicImage ||
+     `assets/thumb/${slug}.jpg`;
+
+    const ogImage = normalizePublicImage(preferredImage);
+
+    return `
+<meta property="og:type" content="website">
+<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:image" content="${ogImage}">
+<meta property="og:image:secure_url" content="${ogImage}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(title)}">
+<meta name="twitter:description" content="${escapeHtml(description)}">
+<meta name="twitter:image" content="${ogImage}">
+`.trim();
+  }
+
+  function injectOGMeta(html, state){
+    const ogMeta = buildOGMeta(state);
+
+    html = String(html || "");
+
+    html = html.replace(/<meta\s+property=["']og:[\s\S]*?>/gi, "");
+    html = html.replace(/<meta\s+name=["']twitter:[\s\S]*?>/gi, "");
+
+    if(html.includes("</head>")){
+      return html.replace("</head>", "\n" + ogMeta + "\n</head>");
+    }
+
+    return ogMeta + "\n" + html;
   }
 
   function downloadTextFile(filename, content, type = "text/plain"){
@@ -28,7 +110,10 @@
   function exportPublicCard(){
     const state = window.TemeriaForge.collectState();
     const fileName = slugify(state.content.title) + ".html";
-    const html = window.TemeriaRenderer.buildStandaloneHTML(state);
+
+    let html = window.TemeriaRenderer.buildStandaloneHTML(state);
+    html = injectOGMeta(html, state);
+
     downloadTextFile(fileName, html, "text/html");
     return html;
   }
@@ -67,7 +152,10 @@
   window.TemeriaExport = {
     exportPublicCard,
     downloadTextFile,
-    slugify
+    slugify,
+    buildOGMeta,
+    injectOGMeta,
+    normalizePublicImage
   };
 
   window.exportPublicCard = exportPublicCard;

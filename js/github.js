@@ -43,13 +43,13 @@
     );
   }
 
-  function getPublishedCardURL(fileName){
-    return `https://${CONFIG.user}.github.io/${CONFIG.repo}/${CONFIG.cardsFolder}/${fileName}`;
-  }
+function getPublishedCardURL(fileName){
+  return `https://temeria.vercel.app/${CONFIG.cardsFolder}/${fileName}`;
+}
 
-  function getPublicAssetURL(path){
-    return `https://${CONFIG.user}.github.io/${CONFIG.repo}/${path}`;
-  }
+function getPublicAssetURL(path){
+  return `https://temeria.vercel.app/${path}`;
+}
 
   async function getExistingSHA(apiURL, token){
 

@@ -351,6 +351,10 @@ accept=".mp4,video/*"
     Condividi Card Live
   </button>
 
+  <button onclick="openCreatorStudio()">
+  🎬 Creator Studio
+</button>
+
   <button onclick="saveGitHubToken()">
     💾 Salva GitHub Token
   </button>
@@ -669,6 +673,26 @@ function addEmoji(value){
   }
 }
 
+</script>
+<script>
+function openCreatorStudio(){
+
+  const currentCard =
+    window.state?.github?.lastPublishedUrl ||
+    "";
+
+  let finalURL = "creator.html";
+
+  if(currentCard){
+
+    finalURL +=
+      "?mode=tiktok&zoom=1&url=" +
+      encodeURIComponent(currentCard);
+
+  }
+
+  window.open(finalURL,"_blank");
+}
 </script>
 </body>
 

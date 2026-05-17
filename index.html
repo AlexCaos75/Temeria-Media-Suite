@@ -16,7 +16,7 @@ Temeria Media Forge - Interplanetary
 <link rel="icon" href="favicon.png">
 
 <link
-href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap"
+href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&family=Rajdhani:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap"
 rel="stylesheet"
 >
 
@@ -48,6 +48,28 @@ rel="stylesheet"
       <label>Emoji / Simboli (opzionale)</label>
       <input id="emoticons" placeholder="🌙 ✨ 💫 🩵" />
 
+      <!-- =========================
+     TEMERIA EMOJI PANEL
+========================= -->
+
+<div class="panel" style="margin-top:12px;">
+  <div class="panelHead">
+    <div>✨ Emoji Panel</div>
+    <div style="opacity:.7;font-size:12px;">click rapido</div>
+  </div>
+
+  <div class="panelBody">
+
+    <div class="rowBtns">
+      <button type="button" onclick="addEmoji('🌙 ✨ 💜 🪽')">🌙 Fantasy</button>
+      <button type="button" onclick="addEmoji('🎵 🎶 🎧 💿')">🎵 Musica</button>
+      <button type="button" onclick="addEmoji('☀️ 🌸 ☕ 🌿')">☀️ Buongiorno</button>
+      <button type="button" onclick="addEmoji('👑 ❤️ 🔥 🌹')">👑 Regina</button>
+      <button type="button" onclick="addEmoji('🪶 🔮 🌌 💫')">🪶 Temeria</button>
+    </div>
+
+  </div>
+</div>
       <label>Stile Testo</label>
       <select id="textStyle">
         <option value="normal">Classico</option>
@@ -55,7 +77,43 @@ rel="stylesheet"
         <option value="neon">Neon poetico</option>
       </select>
 
-   
+   <!-- =========================
+     TEMERIA TEXT PALETTE
+========================= -->
+
+<div class="panel" style="margin-top:12px;">
+  <div class="panelHead">
+    <div>🖋️ Text Palette</div>
+    <div style="opacity:.7;font-size:12px;">font + mood</div>
+  </div>
+
+  <div class="panelBody">
+
+    <label>Font</label>
+
+    <select id="fontPreset">
+      <option value="Orbitron">Orbitron</option>
+      <option value="Cinzel">Cinzel</option>
+      <option value="Playfair Display">Playfair</option>
+      <option value="Cormorant Garamond">Cormorant</option>
+      <option value="Rajdhani">Rajdhani</option>
+      <option value="Montserrat">Montserrat</option>
+    </select>
+
+    <label style="margin-top:10px;">Mood Testo</label>
+
+    <select id="textMood">
+      <option value="normal">Normale</option>
+      <option value="dream">Dream</option>
+      <option value="cinematic">Cinematic</option>
+      <option value="angel">Angel</option>
+      <option value="neon">Neon</option>
+      <option value="parchment">Pergamena</option>
+    </select>
+
+  </div>
+</div>
+
 <label>Stile Card</label>
 
 <select id="cardStyle">
@@ -313,7 +371,9 @@ accept=".mp4,video/*"
       <div class="grid">
         <div>
           <label>Preset Palette</label>
-          <select id="themePreset">
+        <select id="themePreset">
+
+
 
   <option value="fantasy">Fantasy</option>
 
@@ -323,9 +383,73 @@ accept=".mp4,video/*"
 
   <option value="neon">Neon</option>
 
+  <option value="temeria">Temeria</option>
+
+  <option value="fata_piume">Temeria - Fata delle Piume</option>
+
+  <option value="regina">Regina di Cuori</option>
+
+  <option value="tiktok">TikTok Neon</option>
+
+  <option value="angelic">Angelic Dream</option>
+
+  <option value="velvet">Velvet Dark</option>
+
+  <option value="parchment">Pergamena</option>
+
 </select>
 
+<div
+id="presetDescription"
+style="
+margin-top:10px;
+padding:14px;
+border-radius:16px;
+background:rgba(255,255,255,.04);
+font-size:14px;
+line-height:1.6;
+opacity:.95;
+border:1px solid rgba(255,255,255,.08);
+display:flex;
+align-items:center;
+gap:12px;
+"
+>
 
+<div
+id="presetIcon"
+style="
+width:42px;
+height:42px;
+border-radius:999px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+background:rgba(255,255,255,.08);
+box-shadow:0 0 20px rgba(255,255,255,.12);
+flex-shrink:0;
+"
+>
+✨
+</div>
+
+<div id="presetText">
+✨ Seleziona un preset Temeria
+</div>
+<button
+type="button"
+onclick="applyPresetText()"
+style="
+margin-left:auto;
+padding:10px 14px;
+border-radius:999px;
+font-size:13px;
+"
+>
+✍️ Testo
+</button>
+</div>
           <div class="rowBtns" style="margin-top:10px;">
             <button type="button" onclick="randomTheme()">Random Avanguardia</button>
             <button type="button" onclick="copyThemeJSON()">Copia Palette JSON</button>
@@ -531,6 +655,19 @@ accept=".mp4,video/*"
 <script src="js/update-system.js"></script>
 <script src="js/app.js"></script>
 <script>
+
+function addEmoji(value){
+  const el = document.getElementById("emoticons");
+  if(!el) return;
+
+  el.value = el.value
+    ? el.value + " " + value
+    : value;
+
+  if(typeof genera === "function"){
+    genera();
+  }
+}
 
 </script>
 </body>

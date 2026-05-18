@@ -335,37 +335,46 @@ function getPublicAssetURL(path){
       let state =
         window.TemeriaForge.collectState();
 
-      const slug =
-        window.TemeriaExport.slugify(
-          state.content.title
-        );
+     const slug =
+  window.TemeriaExport.slugify(
+    state.content.title
+  );
 
-      const fileName =
-        `${slug}.html`;
+const uniqueId =
+  new Date()
+    .toISOString()
+    .replace(/[-:T.Z]/g,"")
+    .slice(0,14);
+
+const publishSlug =
+  `${slug}-${uniqueId}`;
+
+const fileName =
+  `${publishSlug}.html`;
 
       const publicUrl =
         getPublishedCardURL(fileName);
 
       state =
-        await uploadMainImageIfNeeded(
-          state,
-          slug,
-          token
-        );
+  await uploadMainImageIfNeeded(
+    state,
+    publishSlug,
+    token
+  );
 
-      state =
-        await uploadMP3IfNeeded(
-          state,
-          slug,
-          token
-        );
+     state =
+  await uploadMP3IfNeeded(
+    state,
+    publishSlug,
+    token
+  );
 
-      state =
-        await uploadVideoIfNeeded(
-          state,
-          slug,
-          token
-        );
+state =
+  await uploadVideoIfNeeded(
+    state,
+    publishSlug,
+    token
+  );
 
       state.github.lastPublishedUrl =
         publicUrl;

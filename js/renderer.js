@@ -305,7 +305,10 @@ function buildOGMeta(state, url){
     state.content.phrase ||
     "Card creata con Temeria Media Forge";
 
-  const image = state.media.mainImage || "";
+ const image =
+  state.github?.ogImageUrl ||
+  state.media?.mainImage ||
+  "";
 
   let img =
     "https://temeria.vercel.app/assets/thumb/default.jpg";

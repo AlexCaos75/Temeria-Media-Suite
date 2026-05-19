@@ -20,8 +20,8 @@
       return false;
 
     if(type === "video" &&
-      ["music_focus","social_clean","image_focus"].includes(mode))
-      return false;
+  ["music_focus","image_focus"].includes(mode))
+  return false;
 
     if(type === "audio" &&
       ["image_focus","video_focus"].includes(mode))

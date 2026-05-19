@@ -489,13 +489,16 @@ style="
 
  function buildAudio(state){
 
-  /*
-    Se è presente un video MP4, l'audio separato viene disattivato.
-    Così non compaiono tasti YouTube/MP3 doppi o inutili.
-  */
-  if(state.media.videoUrl){
-    return "";
-  }
+ /*
+  Se è presente un video MP4 MA NON esiste un MP3 separato,
+  l'audio separato viene disattivato.
+*/
+if(
+  state.media.videoUrl &&
+  !state.media.mp3Url
+){
+  return "";
+}
 
   if(!showByOutput(state,"audio"))
     return "";

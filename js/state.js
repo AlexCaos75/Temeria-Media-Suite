@@ -196,7 +196,7 @@ state.media.videoMode =
     state.media.mediaEngineMode = getVal("mediaEngineMode", "temeria_v4");
 
     state.github.lastPublishedUrl = old.github?.lastPublishedUrl || "";
-    state.github.ogImageUrl = old.github?.ogImageUrl || "";
+    state.github.ogImageUrl = "";
 
     window.TemeriaForge.state = state;
     return state;
@@ -351,6 +351,8 @@ setVal(
   function resetForge(){
     localStorage.removeItem(STORAGE_KEY);
     window.TemeriaForge.state = clone(DEFAULT_STATE);
+    window.TemeriaForge.state.github.ogImageUrl = "";
+window.TemeriaForge.state.github.lastPublishedUrl = "";
     applyState(clone(DEFAULT_STATE));
 
     const gf = $("giffile"); if(gf) gf.value = "";

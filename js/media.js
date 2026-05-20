@@ -36,7 +36,11 @@
 
 function buildMainImage(state){
 
-  const src = state.media.mainImage;
+  const src =
+  state.media.mainImagePublic ||
+  state.media.mainImage ||
+  state.media.mainImageRaw ||
+  "";
 
   if(!src || !showByOutput(state,"image"))
     return "";

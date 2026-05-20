@@ -528,11 +528,19 @@ async function uploadMainImageIfNeeded(
     token
   );
 
-  state.media.mainImage =
-    publicImageUrl;
+ state.media.mainImage =
+  publicImageUrl;
 
-  state.github.ogImageUrl =
-    publicImageUrl;
+state.media.mainImagePublic =
+  publicImageUrl;
+
+state.github.ogImageUrl =
+  publicImageUrl;
+
+log(
+  "Immagine pubblica aggiornata:",
+  publicImageUrl
+);
 
   return state;
 }
@@ -865,67 +873,121 @@ async function publishCardToGitHub(){
       CONFIG.whatsappSafetyDelay
     );
 
-    /* =========================
-       FINALIZE
-    ========================= */
+   /* =========================
+   FINALIZE
+========================= */
 
-    state.github.lastPublishedUrl =
-      publicUrl;
+state.github.lastPublishedUrl =
+  publicUrl;
 
-    window.TemeriaForge
-      .applyState(state);
+/* =========================
+   SYNC PUBLIC IMAGE
+========================= */
 
-    window.TemeriaForge
-      .saveState();
+if(
+  state.github?.ogImageUrl
+){
 
-    if(
-      typeof window.genera ===
-      "function"
-    ){
-      window.genera();
-    }
+  state.media =
+    state.media || {};
 
-    if(
-      window.TemeriaForge
-      ?.safeCopyText
-    ){
+ state.media.mainImagePublic =
+  state.github.ogImageUrl;
 
-      window.TemeriaForge
-        .safeCopyText(publicUrl);
-    }
+/* =========================
+   KEEP ORIGINAL LOCAL IMAGE
+========================= */
 
-    setPublishStatus(
-      "Publish completato."
-    );
+if(
+  !state.media.mainImage
+){
 
-    alert(
-      "Card pubblicata con successo:\n\n" +
-      publicUrl
-    );
-
-    window.open(
-      withCache(publicUrl),
-      "_blank"
-    );
-
-  }catch(err){
-
-    console.error(err);
-
-    setPublishStatus(
-      "Errore publish."
-    );
-
-    alert(
-      "Publish fallito.\nControlla console."
-    );
-
-  }finally{
-
-    publishLock = false;
-  }
+  state.media.mainImage =
+    state.github.ogImageUrl;
 }
 
+  log(
+    "Renderer sincronizzato con immagine pubblica:",
+    state.github.ogImageUrl
+  );
+}
+
+/* =========================
+   APPLY STATE
+========================= */
+
+window.TemeriaForge
+  .applyState(state);
+
+window.TemeriaForge
+  .saveState();
+
+/* =========================
+   FORCE RENDER REFRESH
+========================= */
+
+await delay(400);
+
+if(
+  typeof window.genera ===
+  "function"
+){
+
+  log(
+    "Refresh renderer Forge..."
+  );
+
+  window.genera();
+}
+
+/* =========================
+   COPY URL
+========================= */
+
+if(
+  window.TemeriaForge
+  ?.safeCopyText
+){
+
+  window.TemeriaForge
+    .safeCopyText(publicUrl);
+}
+
+/* =========================
+   COMPLETE
+========================= */
+
+setPublishStatus(
+  "Publish completato."
+);
+
+alert(
+  "Card pubblicata con successo:\n\n" +
+  publicUrl
+);
+
+window.open(
+  withCache(publicUrl),
+  "_blank"
+);
+
+}catch(err){
+
+  console.error(err);
+
+  setPublishStatus(
+    "Errore publish."
+  );
+
+  alert(
+    "Publish fallito.\nControlla console."
+  );
+
+}finally{
+
+  publishLock = false;
+}
+}
 /* =========================================================
    PUBLIC API
 ========================================================= */

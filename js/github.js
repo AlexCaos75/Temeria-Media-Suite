@@ -530,17 +530,19 @@ async function uploadMainImageIfNeeded(
     token
   );
 
- /* =========================
+/* =========================
    KEEP ORIGINAL DATA URL
 ========================= */
 
-if(
-  !state.media.mainImageRaw
-){
+state.media.mainImageRaw =
+  img;
 
-  state.media.mainImageRaw =
-    img;
-}
+/* =========================
+   KEEP FORGE PREVIEW WORKING
+========================= */
+
+state.media.mainImage =
+  img;
 
 /* =========================
    PUBLIC IMAGE
@@ -555,15 +557,6 @@ state.media.mainImagePublic =
 
 state.github.ogImageUrl =
   publicImageUrl;
-
-state.github.ogImageUrl =
-  publicImageUrl;
-
-log(
-  "Immagine pubblica aggiornata:",
-  publicImageUrl
-);
-
   return state;
 }
 

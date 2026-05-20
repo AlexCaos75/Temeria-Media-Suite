@@ -668,9 +668,24 @@ async function uploadVideoIfNeeded(
   );
 
   state.media.videoUrl =
-    publicVideoUrl;
+  publicVideoUrl;
 
-  return state;
+/* =========================
+   HEAVY VIDEO FLAG
+========================= */
+
+state.github =
+  state.github || {};
+
+state.github.hasHeavyVideo =
+  true;
+
+log(
+  "Video pubblico aggiornato:",
+  publicVideoUrl
+);
+
+return state;
 }
 
 /* =========================================================
@@ -856,25 +871,35 @@ async function publishCardToGitHub(){
       );
     }
 
-    /* =========================
-       VERIFY OG IMAGE
-    ========================= */
+ /* =========================
+   VERIFY OG IMAGE
+========================= */
 
-    if(state.github?.ogImageUrl){
+/*
+  Se la card contiene un MP4 pesante,
+  evitiamo verify aggressiva perché
+  GitHub/Vercel possono impiegare
+  molto tempo a propagare i video.
+*/
 
-      const ogVerified =
-        await verifyPublishedResource(
-          state.github.ogImageUrl,
-          "OG image"
-        );
+if(
+  state.github?.ogImageUrl &&
+  !state.github?.hasHeavyVideo
+){
 
-      if(!ogVerified){
+  const ogVerified =
+    await verifyPublishedResource(
+      state.github.ogImageUrl,
+      "OG image"
+    );
 
-        console.warn(
-          "OG image non ancora propagata."
-        );
-      }
-    }
+  if(!ogVerified){
+
+    console.warn(
+      "OG image non ancora propagata."
+    );
+  }
+}
 
     /* =========================
        WHATSAPP SAFETY DELAY

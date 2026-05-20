@@ -477,8 +477,10 @@ async function uploadMainImageIfNeeded(
   token
 ){
 
-  const img =
-    state?.media?.mainImage || "";
+ const img =
+  state?.media?.mainImageRaw ||
+  state?.media?.mainImage ||
+  "";
 
   if(
     !img.startsWith(
@@ -528,10 +530,30 @@ async function uploadMainImageIfNeeded(
     token
   );
 
- state.media.mainImage =
-  publicImageUrl;
+ /* =========================
+   KEEP ORIGINAL DATA URL
+========================= */
+
+if(
+  !state.media.mainImageRaw
+){
+
+  state.media.mainImageRaw =
+    img;
+}
+
+/* =========================
+   PUBLIC IMAGE
+========================= */
 
 state.media.mainImagePublic =
+  publicImageUrl;
+
+/* =========================
+   OG IMAGE
+========================= */
+
+state.github.ogImageUrl =
   publicImageUrl;
 
 state.github.ogImageUrl =

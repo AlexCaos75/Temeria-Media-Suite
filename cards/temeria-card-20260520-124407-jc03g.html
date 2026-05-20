@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temeria Card</title>
+<link rel="icon" href="data:,">
+
+<meta property="og:title" content="Temeria Card">
+<meta property="og:description" content="Card creata con Temeria Media Forge">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://temeria.vercel.app/cards/temeria-card-20260520-124407-jc03g.html">
+
+<meta property="og:image" content="https://temeria.vercel.app/assets/thumb/default.jpg">
+<meta property="og:image:secure_url" content="https://temeria.vercel.app/assets/thumb/default.jpg">
+
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Temeria Card">
+<meta name="twitter:description" content="Card creata con Temeria Media Forge">
+<meta name="twitter:image" content="https://temeria.vercel.app/assets/thumb/default.jpg">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  min-height:100vh;
+  padding:30px;
+  background:radial-gradient(circle at top,#182033,#070a12 60%,#020617);
+  color:white;
+  font-family:Orbitron,Arial,sans-serif;
+}
+button,a{font-family:Orbitron,Arial,sans-serif;}
+@media(max-width:700px){
+  body{padding:14px;}
+  .temeria-card{width:96%!important;padding:22px!important;}
+  .temeria-card h1{font-size:28px!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="temeria-public-root" style="position:relative;max-width:1200px;margin:auto;padding-top:30px;">
+  <div class="temeria-card" style="
+    position:relative;
+    padding:30px;
+    border-radius:26px;
+    background:linear-gradient(135deg,#070a12,#111827,#b06cff);
+    color:#eafcff;
+    max-width:760px;
+    min-height:auto;
+    width:92%;
+    margin:auto;
+    box-sizing:border-box;
+    text-align:center;
+    overflow:visible;
+    box-shadow:0 0 40px rgba(0,0,0,.35),0 0 55px #b06cff;
+    
+  ">
+    
+    
+    <h1 style="
+font-size:34px;
+margin-bottom:20px;
+font-family:Orbitron,Arial,sans-serif;
+letter-spacing:2px;
+color:#00f6ff;
+text-shadow:0 0 20px #00f6ff,0 0 55px #b06cff;
+">
+
+</h1>
+
+<div style="
+font-size:22px;
+line-height:1.7;
+max-width:700px;
+margin:auto;
+color:#eafcff;
+font-style:normal;
+letter-spacing:normal;
+text-shadow:none;
+font-family:Orbitron,Arial,sans-serif;
+">
+
+</div>
+
+    
+    
+    
+    
+    
+    
+    
+    <div style="margin-top:25px;text-align:center;"><button type="button" onclick="TemeriaPublicPlayer.copy('https://temeria.vercel.app/cards/temeria-card-20260520-124407-jc03g.html')" style="padding:16px 34px;border:none;cursor:pointer;border-radius:999px;background:linear-gradient(90deg,#00f6ff,#b06cff);color:white;font-size:18px;font-weight:bold;box-shadow:0 0 35px rgba(176,108,255,.28);">🔗 COPIA LINK</button></div>
+  </div>
+</div>
+
+<script>
+
+window.TemeriaPublicPlayer =
+window.TemeriaPublicPlayer || {
+
+  yt:function(id,action){
+
+    var iframe =
+      document.getElementById(id);
+
+    if(!iframe ||
+      !iframe.contentWindow)
+      return;
+
+    iframe.contentWindow.postMessage(
+      JSON.stringify({
+        event:"command",
+        func:action,
+        args:[]
+      }),
+      "*"
+    );
+  },
+
+  mp3:function(id,action){
+
+    var audio =
+      document.getElementById(id);
+
+    if(!audio)
+      return;
+
+    if(action === "play"){
+
+      audio.play()
+      .catch(function(){
+
+        alert(
+          "Premi PLAY di nuovo: il browser ha bloccato l'audio automatico."
+        );
+
+      });
+
+    }
+
+    if(action === "stop"){
+
+      audio.pause();
+      audio.currentTime = 0;
+
+    }
+  },
+
+video:function(id,action){
+
+  var video =
+    document.getElementById(id);
+
+  if(!video)
+    return;
+
+  if(action === "play"){
+
+    video.play()
+    .catch(function(){
+
+      alert(
+        "Premi PLAY di nuovo: il browser ha bloccato l'autoplay."
+      );
+
+    });
+
+  }
+
+  if(action === "stop"){
+
+    video.pause();
+    video.currentTime = 0;
+
+  }
+},
+
+
+  copy:function(text){
+
+    if(navigator.clipboard){
+
+      navigator.clipboard.writeText(text);
+
+    }
+  }
+};
+
+</script>
+</body>
+</html>

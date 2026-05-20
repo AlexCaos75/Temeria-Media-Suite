@@ -421,12 +421,22 @@ const publicImageUrl =
   withCache(
     getPublicAssetURL(imagePath)
   );
+ const uploadedCard =
   await uploadFileToGitHub(
-    imagePath,
-    base64,
-    `Upload image ${imageName}`,
+    cardPath,
+    safeBase64Unicode(html),
+    `Publish card ${fileName}`,
     token
   );
+
+if(
+  !uploadedCard?.content?.path ||
+  uploadedCard.content.path !== cardPath
+){
+  throw new Error(
+    "La card HTML non risulta creata su GitHub: " + cardPath
+  );
+}
 
   state.media.mainImage =
     publicImageUrl;

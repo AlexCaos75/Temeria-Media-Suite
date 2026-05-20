@@ -417,8 +417,10 @@ async function uploadMainImageIfNeeded(
   const imagePath =
     `${CONFIG.imgFolder}/${imageName}`;
 
- const publicImageUrl =
-  getPublicAssetURL(imagePath);
+const publicImageUrl =
+  withCache(
+    getPublicAssetURL(imagePath)
+  );
   await uploadFileToGitHub(
     imagePath,
     base64,

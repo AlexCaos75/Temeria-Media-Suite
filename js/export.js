@@ -75,10 +75,12 @@ const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + THUMB_FOLDER + "default.jpg";
     const title = content.title || "Temeria Media Forge";
 
     const description =
-      content.subtitle ||
-      content.description ||
-      content.text ||
-      "Card creata con Temeria Media Forge";
+  content.phrase ||
+  content.phrase2 ||
+  content.subtitle ||
+  content.description ||
+  content.text ||
+  "Card creata con Temeria Media Forge";
 
     const ogImage = getDynamicOGImage(state);
 

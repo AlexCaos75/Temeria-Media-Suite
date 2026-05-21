@@ -370,11 +370,10 @@ function buildOGMeta(state, url){
     state.content.phrase ||
     "Card creata con Temeria Media Forge";
 
- const image =
+const image =
   state.media?.mainImagePublic ||
   state.github?.ogImageUrl ||
-  CONFIG?.fallbackOGImage ||
-  "";
+  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
 
  let img =
   "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
@@ -410,7 +409,7 @@ return `
 `;
 }
   function buildStandaloneHTML(state, options = {}){
-    const publicUrl = options.publicUrl || state.github.lastPublishedUrl || "";
+   const publicUrl = options.publicUrl || state.github?.lastPublishedUrl || "";
     const title = state.content.title || "Temeria Card";
     const card = renderCard(state, { publicUrl });
 

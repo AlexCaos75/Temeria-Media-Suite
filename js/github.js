@@ -1,10 +1,10 @@
 /* =========================================================
-   TEMERIA MEDIA FORGE V5 - ULTIMATE GITHUB PUBLISH ENGINE
-   Stable Publish + OG + Parallel Upload + Retry + Cache
+   TEMERIA MEDIA FORGE V5
+   ULTRA STABLE GITHUB PUBLISH ENGINE
+   Stable Publish + OG + Retry + Cache + Verify
 ========================================================= */
 
 (function(){
-
 "use strict";
 
 /* =========================================================
@@ -22,23 +22,23 @@ const CONFIG = {
   audioFolder: "assets/audio",
   videoFolder: "assets/video",
 
-  publishDelay: 1200,
+  fallbackOGImage:
+    "https://temeria.vercel.app/assets/default-og.jpg",
+
   retryAttempts: 3,
   retryDelay: 1200,
 
+  verifyAttempts: 10,
+  verifyDelay: 3000,
+
+  whatsappSafetyDelay: 2500,
+
   enableCacheBuster: true,
-  enableParallelUpload: true,
 
-  githubApi:
-    "https://api.github.com",
-
+  githubApi: "https://api.github.com",
   vercelBase:
-    "https://temeria.vercel.app"
+  "https://alexcaos75.github.io/Temeria-Media-Suite"
 };
-
-/* =========================================================
-   INTERNAL STATE
-========================================================= */
 
 let publishLock = false;
 
@@ -51,8 +51,7 @@ function saveGitHubToken(){
   const token =
     prompt("Inserisci GitHub Token");
 
-  if(!token)
-    return;
+  if(!token) return;
 
   localStorage.setItem(
     "TEMERIA_GITHUB_TOKEN",
@@ -72,14 +71,14 @@ function getGitHubToken(){
 }
 
 /* =========================================================
-   HELPERS
+   UTILS
 ========================================================= */
 
 function delay(ms){
 
-  return new Promise(resolve =>
-    setTimeout(resolve, ms)
-  );
+  return new Promise(resolve=>{
+    setTimeout(resolve, ms);
+  });
 }
 
 function log(...args){
@@ -90,138 +89,6 @@ function log(...args){
     ...args
   );
 }
-
-function safeBase64Unicode(str){
-
-  const bytes =
-    new TextEncoder().encode(str);
-
-  let binary = "";
-
-  bytes.forEach(byte => {
-    binary += String.fromCharCode(byte);
-  });
-
-  return btoa(binary);
-}
-
-function safeJSONParse(str, fallback = {}){
-
-  try{
-    return JSON.parse(str);
-  }catch{
-    return fallback;
-  }
-}
-
-function generateUniqueId(){
-
-  const now =
-    new Date();
-
-  return (
-    now.getFullYear() +
-    String(now.getMonth()+1).padStart(2,"0") +
-    String(now.getDate()).padStart(2,"0") +
-    "-" +
-    String(now.getHours()).padStart(2,"0") +
-    String(now.getMinutes()).padStart(2,"0") +
-    String(now.getSeconds()).padStart(2,"0") +
-    "-" +
-    Math.random()
-      .toString(36)
-      .slice(2,7)
-  );
-}
-
-function withCache(url){
-
-  if(!CONFIG.enableCacheBuster)
-    return url;
-
-  const separator =
-    url.includes("?") ? "&" : "?";
-
-  return (
-    url +
-    separator +
-    "v=" +
-    Date.now()
-  );
-}
-
-/* =========================================================
-   PUBLIC URLS
-========================================================= */
-
-function getPublishedCardURL(fileName){
-
-  return (
-    `${CONFIG.vercelBase}/${CONFIG.cardsFolder}/${fileName}`
-  );
-}
-
-function getPublicAssetURL(path){
-
-  return (
-    `${CONFIG.vercelBase}/${path}`
-  );
-}
-
-/* =========================================================
-   MIME + BASE64
-========================================================= */
-
-function extractBase64(dataUrl){
-
-  if(
-    !dataUrl ||
-    !dataUrl.includes(",")
-  ){
-    return null;
-  }
-
-  return dataUrl.split(",")[1];
-}
-
-function getExtensionFromDataUrl(dataUrl){
-
-  if(!dataUrl)
-    return "bin";
-
-  if(dataUrl.startsWith("data:image/png"))
-    return "png";
-
-  if(dataUrl.startsWith("data:image/webp"))
-    return "webp";
-
-  if(dataUrl.startsWith("data:image/gif"))
-    return "gif";
-
-  if(dataUrl.startsWith("data:image/jpeg"))
-    return "jpg";
-
-  if(dataUrl.startsWith("data:image/jpg"))
-    return "jpg";
-
-  if(dataUrl.startsWith("data:audio/mp3"))
-    return "mp3";
-
-  if(dataUrl.startsWith("data:audio/mpeg"))
-    return "mp3";
-
-  if(dataUrl.startsWith("data:audio/wav"))
-    return "wav";
-
-  if(dataUrl.startsWith("data:video/mp4"))
-    return "mp4";
-
-  return "bin";
-}
-
-/* =========================================================
-   STATUS
-========================================================= */
 
 function setPublishStatus(text){
 
@@ -237,8 +104,230 @@ function setPublishStatus(text){
   }
 }
 
+function safeBase64Unicode(str){
+
+  const bytes =
+    new TextEncoder().encode(str);
+
+  let binary = "";
+
+  bytes.forEach(byte=>{
+    binary +=
+      String.fromCharCode(byte);
+  });
+
+  return btoa(binary);
+}
+
+function generateUniqueId(){
+
+  const now = new Date();
+
+  return (
+    now.getFullYear() +
+    String(now.getMonth()+1)
+      .padStart(2,"0") +
+    String(now.getDate())
+      .padStart(2,"0") +
+    "-" +
+    String(now.getHours())
+      .padStart(2,"0") +
+    String(now.getMinutes())
+      .padStart(2,"0") +
+    String(now.getSeconds())
+      .padStart(2,"0") +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2,7)
+  );
+}
+
+function withCache(url){
+
+  if(!CONFIG.enableCacheBuster){
+    return url;
+  }
+
+  const separator =
+    url.includes("?")
+      ? "&"
+      : "?";
+
+  return (
+    url +
+    separator +
+    "v=" +
+    Date.now()
+  );
+}
+
+function getPublishedCardURL(fileName){
+
+  return (
+    `${CONFIG.vercelBase}/` +
+    `${CONFIG.cardsFolder}/${fileName}`
+  );
+}
+
+function getPublicAssetURL(path){
+
+  return (
+    `${CONFIG.vercelBase}/${path}`
+  );
+}
+
+function extractBase64(dataUrl){
+
+  if(
+    !dataUrl ||
+    !dataUrl.includes(",")
+  ){
+    return null;
+  }
+
+  return dataUrl.split(",")[1];
+}
+
+function getExtensionFromDataUrl(dataUrl){
+
+  if(!dataUrl){
+    return "bin";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:image/png"
+    )
+  ){
+    return "png";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:image/webp"
+    )
+  ){
+    return "webp";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:image/gif"
+    )
+  ){
+    return "gif";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:image/jpeg"
+    )
+  ){
+    return "jpg";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:image/jpg"
+    )
+  ){
+    return "jpg";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:audio/mp3"
+    )
+  ){
+    return "mp3";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:audio/mpeg"
+    )
+  ){
+    return "mp3";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:audio/wav"
+    )
+  ){
+    return "wav";
+  }
+
+  if(
+    dataUrl.startsWith(
+      "data:video/mp4"
+    )
+  ){
+    return "mp4";
+  }
+
+  return "bin";
+}
+
 /* =========================================================
-   GITHUB SHA
+   VERIFY PUBLIC DEPLOY
+========================================================= */
+
+async function verifyPublishedResource(
+  url,
+  label = "resource"
+){
+
+  for(
+    let i = 0;
+    i < CONFIG.verifyAttempts;
+    i++
+  ){
+
+    try{
+
+      setPublishStatus(
+        `Verifica ${label}... (${i+1}/${CONFIG.verifyAttempts})`
+      );
+
+      const response =
+        await fetch(
+          withCache(url),
+          {
+            method: "HEAD",
+            cache: "no-store"
+          }
+        );
+
+      if(response.ok){
+
+        log(
+          `${label} verificata`,
+          url
+        );
+
+        return true;
+      }
+
+    }catch(err){
+
+      console.warn(
+        `Verify ${label} failed`,
+        err
+      );
+    }
+
+    await delay(
+      CONFIG.verifyDelay
+    );
+  }
+
+  return false;
+}
+
+/* =========================================================
+   SHA
 ========================================================= */
 
 async function getExistingSHA(
@@ -257,8 +346,9 @@ async function getExistingSHA(
         }
       });
 
-    if(!res.ok)
+    if(!res.ok){
       return null;
+    }
 
     const data =
       await res.json();
@@ -277,7 +367,7 @@ async function getExistingSHA(
 }
 
 /* =========================================================
-   RETRY WRAPPER
+   RETRY
 ========================================================= */
 
 async function retry(fn){
@@ -313,7 +403,7 @@ async function retry(fn){
 }
 
 /* =========================================================
-   UPLOAD FILE
+   UPLOAD
 ========================================================= */
 
 async function uploadFileToGitHub(
@@ -326,7 +416,9 @@ async function uploadFileToGitHub(
   return retry(async()=>{
 
     const apiURL =
-      `${CONFIG.githubApi}/repos/${CONFIG.user}/${CONFIG.repo}/contents/${path}`;
+      `${CONFIG.githubApi}/repos/` +
+      `${CONFIG.user}/` +
+      `${CONFIG.repo}/contents/${path}`;
 
     const sha =
       await getExistingSHA(
@@ -335,29 +427,25 @@ async function uploadFileToGitHub(
       );
 
     const body = {
-
       message,
       content: base64Content,
       branch: CONFIG.branch
     };
 
-    if(sha)
+    if(sha){
       body.sha = sha;
+    }
 
     const response =
       await fetch(apiURL,{
-
         method:"PUT",
-
         headers:{
           Authorization:
             `Bearer ${token}`,
-
           "Content-Type":
             "application/json"
         },
-
-        body:JSON.stringify(body)
+        body: JSON.stringify(body)
       });
 
     const data =
@@ -371,7 +459,8 @@ async function uploadFileToGitHub(
       console.error(data);
 
       throw new Error(
-        "GitHub upload failed: " + path
+        "GitHub upload failed: " +
+        path
       );
     }
 
@@ -380,7 +469,7 @@ async function uploadFileToGitHub(
 }
 
 /* =========================================================
-   MEDIA UPLOADS
+   MEDIA
 ========================================================= */
 
 async function uploadMainImageIfNeeded(
@@ -389,12 +478,20 @@ async function uploadMainImageIfNeeded(
   token
 ){
 
-  const img =
-    state?.media?.mainImage || "";
+ const img =
+  state?.media?.mainImageRaw ||
+  state?.media?.mainImage ||
+  "";
 
   if(
-    !img.startsWith("data:image/")
+    !img.startsWith(
+      "data:image/"
+    )
   ){
+
+    state.github.ogImageUrl =
+      CONFIG.fallbackOGImage;
+
     return state;
   }
 
@@ -408,8 +505,13 @@ async function uploadMainImageIfNeeded(
   const base64 =
     extractBase64(img);
 
-  if(!base64)
+  if(!base64){
+
+    state.github.ogImageUrl =
+      CONFIG.fallbackOGImage;
+
     return state;
+  }
 
   const imageName =
     `${slug}.${ext}`;
@@ -429,12 +531,33 @@ async function uploadMainImageIfNeeded(
     token
   );
 
-  state.media.mainImage =
-    publicImageUrl;
+/* =========================
+   KEEP ORIGINAL DATA URL
+========================= */
 
-  state.github.ogImageUrl =
-    publicImageUrl;
+state.media.mainImageRaw =
+  img;
 
+/* =========================
+   KEEP FORGE PREVIEW WORKING
+========================= */
+
+state.media.mainImage =
+  img;
+
+/* =========================
+   PUBLIC IMAGE
+========================= */
+
+state.media.mainImagePublic =
+  publicImageUrl;
+
+/* =========================
+   OG IMAGE
+========================= */
+
+state.github.ogImageUrl =
+  publicImageUrl;
   return state;
 }
 
@@ -448,7 +571,9 @@ async function uploadMP3IfNeeded(
     state?.media?.mp3Url || "";
 
   if(
-    !audio.startsWith("data:audio/")
+    !audio.startsWith(
+      "data:audio/"
+    )
   ){
     return state;
   }
@@ -463,8 +588,9 @@ async function uploadMP3IfNeeded(
   const base64 =
     extractBase64(audio);
 
-  if(!base64)
+  if(!base64){
     return state;
+  }
 
   const audioName =
     `${slug}.${ext}`;
@@ -503,7 +629,9 @@ async function uploadVideoIfNeeded(
     state?.media?.videoUrl || "";
 
   if(
-    !video.startsWith("data:video/")
+    !video.startsWith(
+      "data:video/"
+    )
   ){
     return state;
   }
@@ -518,8 +646,9 @@ async function uploadVideoIfNeeded(
   const base64 =
     extractBase64(video);
 
-  if(!base64)
+  if(!base64){
     return state;
+  }
 
   const videoName =
     `${slug}.${ext}`;
@@ -540,16 +669,34 @@ async function uploadVideoIfNeeded(
   );
 
   state.media.videoUrl =
-    publicVideoUrl;
+  publicVideoUrl;
 
-  return state;
+/* =========================
+   HEAVY VIDEO FLAG
+========================= */
+
+state.github =
+  state.github || {};
+
+state.github.hasHeavyVideo =
+  true;
+
+log(
+  "Video pubblico aggiornato:",
+  publicVideoUrl
+);
+
+return state;
 }
 
 /* =========================================================
-   OG META FIX
+   OG
 ========================================================= */
 
-function ensureOGData(state, publicUrl){
+function ensureOGData(
+  state,
+  publicUrl
+){
 
   state.github =
     state.github || {};
@@ -564,11 +711,19 @@ function ensureOGData(state, publicUrl){
     "website";
 
   state.github.ogTitle =
-    state.content?.title || "Temeria";
+    state.content?.title ||
+    "Temeria";
 
   state.github.ogDescription =
-    state.content?.text ||
+    state.content?.phrase ||
     "Temeria Media Forge";
+
+  if(
+    !state.github.ogImageUrl
+  ){
+    state.github.ogImageUrl =
+      CONFIG.fallbackOGImage;
+  }
 }
 
 /* =========================================================
@@ -611,6 +766,11 @@ async function publishCardToGitHub(){
     let state =
       window.TemeriaForge.collectState();
 
+    state.github =
+      state.github || {};
+
+    state.github.ogImageUrl = "";
+
     const slug =
       window.TemeriaExport.slugify(
         state.content.title
@@ -626,82 +786,47 @@ async function publishCardToGitHub(){
       `${publishSlug}.html`;
 
     const publicUrl =
-      getPublishedCardURL(
-        fileName
-      );
+      getPublishedCardURL(fileName);
 
     ensureOGData(
       state,
       publicUrl
     );
 
-    /* =========================================
-       PARALLEL UPLOAD
-    ========================================= */
+    await uploadMainImageIfNeeded(
+      state,
+      publishSlug,
+      token
+    );
 
-    if(CONFIG.enableParallelUpload){
+    await uploadMP3IfNeeded(
+      state,
+      publishSlug,
+      token
+    );
 
-      await Promise.all([
-
-        uploadMainImageIfNeeded(
-          state,
-          publishSlug,
-          token
-        ),
-
-        uploadMP3IfNeeded(
-          state,
-          publishSlug,
-          token
-        ),
-
-        uploadVideoIfNeeded(
-          state,
-          publishSlug,
-          token
-        )
-      ]);
-
-    }else{
-
-      state =
-        await uploadMainImageIfNeeded(
-          state,
-          publishSlug,
-          token
-        );
-
-      state =
-        await uploadMP3IfNeeded(
-          state,
-          publishSlug,
-          token
-        );
-
-      state =
-        await uploadVideoIfNeeded(
-          state,
-          publishSlug,
-          token
-        );
-    }
+    await uploadVideoIfNeeded(
+      state,
+      publishSlug,
+      token
+    );
 
     setPublishStatus(
       "Rendering HTML..."
     );
 
-    window.TemeriaForge.applyState(
-      state
-    );
+    window.TemeriaForge
+      .applyState(state);
 
-    window.TemeriaForge.saveState();
+    window.TemeriaForge
+      .saveState();
 
     const html =
       window.TemeriaRenderer
-        .buildStandaloneHTML(
-          state,
-          { publicUrl }
-        );
+      .buildStandaloneHTML(
+        state,
+        { publicUrl }
+      );
 
     setPublishStatus(
       "Upload card..."
@@ -710,72 +835,200 @@ async function publishCardToGitHub(){
     const cardPath =
       `${CONFIG.cardsFolder}/${fileName}`;
 
-    await uploadFileToGitHub(
-
-      cardPath,
-
-      safeBase64Unicode(html),
-
-      `Publish card ${fileName}`,
-
-      token
-    );
-
-    state.github.lastPublishedUrl =
-      publicUrl;
-
-    window.TemeriaForge.saveState();
+    const uploadedCard =
+      await uploadFileToGitHub(
+        cardPath,
+        safeBase64Unicode(html),
+        `Publish card ${fileName}`,
+        token
+      );
 
     if(
-      typeof window.genera ===
-      "function"
-    ){
-      window.genera();
-    }
-
-    if(
-      window.TemeriaForge
-        ?.safeCopyText
+      !uploadedCard?.content?.path ||
+      uploadedCard.content.path !==
+      cardPath
     ){
 
-      window.TemeriaForge
-        .safeCopyText(
-          publicUrl
-        );
+      throw new Error(
+        "La card HTML non risulta creata su GitHub: " +
+        cardPath
+      );
     }
 
-    setPublishStatus(
-      "Publish completato."
+    /* =========================
+       VERIFY CARD
+    ========================= */
+
+    const cardVerified =
+      await verifyPublishedResource(
+        publicUrl,
+        "card"
+      );
+
+    if(!cardVerified){
+
+      throw new Error(
+        "La card non è raggiungibile pubblicamente."
+      );
+    }
+
+ /* =========================
+   VERIFY OG IMAGE
+========================= */
+
+/*
+  Se la card contiene un MP4 pesante,
+  evitiamo verify aggressiva perché
+  GitHub/Vercel possono impiegare
+  molto tempo a propagare i video.
+*/
+
+if(
+  state.github?.ogImageUrl &&
+  !state.github?.hasHeavyVideo
+){
+
+  const ogVerified =
+    await verifyPublishedResource(
+      state.github.ogImageUrl,
+      "OG image"
     );
 
-    alert(
-      "Card pubblicata con successo:\n\n" +
-      publicUrl
+  if(!ogVerified){
+
+    console.warn(
+      "OG image non ancora propagata."
     );
-
-    window.open(
-      publicUrl,
-      "_blank"
-    );
-
-  }catch(err){
-
-    console.error(err);
-
-    setPublishStatus(
-      "Errore publish."
-    );
-
-    alert(
-      "Publish fallito.\nControlla console."
-    );
-
-  }finally{
-
-    publishLock = false;
   }
 }
 
+    /* =========================
+       WHATSAPP SAFETY DELAY
+    ========================= */
+
+    setPublishStatus(
+      "Sincronizzazione cache social..."
+    );
+
+    await delay(
+      CONFIG.whatsappSafetyDelay
+    );
+
+   /* =========================
+   FINALIZE
+========================= */
+
+state.github.lastPublishedUrl =
+  publicUrl;
+
+/* =========================
+   SYNC PUBLIC IMAGE
+========================= */
+
+if(
+  state.github?.ogImageUrl
+){
+
+  state.media =
+    state.media || {};
+
+ state.media.mainImagePublic =
+  state.github.ogImageUrl;
+
+/* =========================
+   KEEP ORIGINAL LOCAL IMAGE
+========================= */
+
+if(
+  !state.media.mainImage
+){
+
+  state.media.mainImage =
+    state.github.ogImageUrl;
+}
+
+  log(
+    "Renderer sincronizzato con immagine pubblica:",
+    state.github.ogImageUrl
+  );
+}
+
+/* =========================
+   APPLY STATE
+========================= */
+
+window.TemeriaForge
+  .applyState(state);
+
+window.TemeriaForge
+  .saveState();
+
+/* =========================
+   FORCE RENDER REFRESH
+========================= */
+
+await delay(400);
+
+if(
+  typeof window.genera ===
+  "function"
+){
+
+  log(
+    "Refresh renderer Forge..."
+  );
+
+  window.genera();
+}
+
+/* =========================
+   COPY URL
+========================= */
+
+if(
+  window.TemeriaForge
+  ?.safeCopyText
+){
+
+  window.TemeriaForge
+    .safeCopyText(publicUrl);
+}
+
+/* =========================
+   COMPLETE
+========================= */
+
+setPublishStatus(
+  "Publish completato."
+);
+
+alert(
+  "Card pubblicata con successo:\n\n" +
+  publicUrl
+);
+
+window.open(
+  withCache(publicUrl),
+  "_blank"
+);
+
+}catch(err){
+
+  console.error(err);
+
+  setPublishStatus(
+    "Errore publish."
+  );
+
+  alert(
+    "Publish fallito.\nControlla console."
+  );
+
+}finally{
+
+  publishLock = false;
+}
+}
 /* =========================================================
    PUBLIC API
 ========================================================= */
@@ -785,16 +1038,15 @@ window.TemeriaGitHub = {
   CONFIG,
 
   saveGitHubToken,
-
   getGitHubToken,
 
   publishCardToGitHub,
 
   uploadMainImageIfNeeded,
-
   uploadMP3IfNeeded,
-
   uploadVideoIfNeeded,
+
+  verifyPublishedResource,
 
   getPublishedCardURL
 };

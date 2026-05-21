@@ -172,14 +172,18 @@ state.style.textMood =
   state.media.mainImageRaw =
   old.media?.mainImageRaw || "";
 
+const uiImage =
+  getVal("gifurl").trim();
+
 state.media.mainImage =
+  uiImage ||
   old.media?.mainImage ||
   state.media.mainImageRaw ||
-  getVal("gifurl").trim();
+  "";
 
 state.media.mainImagePublic =
   old.media?.mainImagePublic || "";
-  
+
     state.media.mainImageName = old.media?.mainImageName || "";
     state.media.mainImageLink = getVal("imglink").trim();
 

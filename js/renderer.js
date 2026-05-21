@@ -375,8 +375,8 @@ function buildOGMeta(state, url){
   state.media?.mainImage ||
   "";
 
-  let img =
-    "https://temeria.vercel.app/assets/thumb/default.jpg";
+ let img =
+  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
 
   if(
     image &&
@@ -385,14 +385,9 @@ function buildOGMeta(state, url){
   ){
     img = image.startsWith("http")
       ? image
-      : "https://temeria.vercel.app/" +
+      : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
         image.replace(/^\/+/, "");
   }
-
-const cacheImg =
-  img.includes("?")
-    ? img
-    : img + "?v=" + Date.now();
 
 return `
 <meta property="og:title" content="${html(title)}">
@@ -400,9 +395,9 @@ return `
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(url || "")}">
 
-<meta property="og:image" content="${esc(cacheImg)}">
-<meta property="og:image:secure_url" content="${esc(cacheImg)}">
-<meta property="og:image:type" content="image/png">
+<meta property="og:image" content="${esc(img)}">
+<meta property="og:image:secure_url" content="${esc(img)}">
+
 
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -410,7 +405,7 @@ return `
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${html(title)}">
 <meta name="twitter:description" content="${html(desc)}">
-<meta name="twitter:image" content="${esc(cacheImg)}">
+<meta name="twitter:image" content="${esc(img)}">
 `;
 }
   function buildStandaloneHTML(state, options = {}){

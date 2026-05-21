@@ -161,7 +161,12 @@ function injectOG(html, state){
   html = html.replace(/<meta property="og:[^>]+>/g,"");
   html = html.replace(/<meta name="twitter:[^>]+>/g,"");
 
+ if (html.includes("</head>")) {
   return html.replace("</head>", og + "</head>");
+}
+
+/* fallback ultra safe */
+return og + html;
 }
 
 /* =========================================================

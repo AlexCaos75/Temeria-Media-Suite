@@ -856,22 +856,20 @@ async function publishCardToGitHub(){
     }
 
     /* =========================
-       VERIFY CARD
-    ========================= */
+   SKIP VERIFY CARD
+========================= */
 
-    const cardVerified =
-      await verifyPublishedResource(
-        publicUrl,
-        "card"
-      );
+/*
+  GitHub Pages può impiegare
+  tempo a propagare nuove card.
 
-    if(!cardVerified){
+  Evitiamo blocchi publish
+  inutili.
+*/
 
-      throw new Error(
-        "La card non è raggiungibile pubblicamente."
-      );
-    }
-
+log(
+  "Verify card saltata."
+);
  /* =========================
    VERIFY OG IMAGE
 ========================= */

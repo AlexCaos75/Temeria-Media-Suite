@@ -520,9 +520,7 @@ async function uploadMainImageIfNeeded(
     `${CONFIG.imgFolder}/${imageName}`;
 
   const publicImageUrl =
-    withCache(
-      getPublicAssetURL(imagePath)
-    );
+  getPublicAssetURL(imagePath);
 
   await uploadFileToGitHub(
     imagePath,

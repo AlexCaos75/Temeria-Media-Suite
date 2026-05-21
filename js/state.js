@@ -276,7 +276,23 @@ setVal(
   function saveState(){
     const state = collectState();
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const safeState =
+  JSON.parse(JSON.stringify(state));
+
+/* =========================
+   REMOVE HUGE RAW DATA
+========================= */
+
+if(safeState.media){
+
+  safeState.media.mainImageRaw = "";
+
+}
+
+localStorage.setItem(
+  STORAGE_KEY,
+  JSON.stringify(safeState)
+);
       updateSaveKPI("Autosave: OK");
     }catch(e){
       console.warn("Salvataggio troppo grande o fallito", e);

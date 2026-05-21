@@ -20,8 +20,8 @@
       return false;
 
     if(type === "video" &&
-      ["music_focus","social_clean","image_focus"].includes(mode))
-      return false;
+  ["music_focus","image_focus"].includes(mode))
+  return false;
 
     if(type === "audio" &&
       ["image_focus","video_focus"].includes(mode))
@@ -31,53 +31,63 @@
   }
 
   /* =========================================================
-     MAIN IMAGE
-  ========================================================= */
+   MAIN IMAGE
+========================================================= */
 
-  function buildMainImage(state){
+function buildMainImage(state){
 
-    const src = state.media.mainImage;
+  const src =
+  state.media.mainImagePublic ||
+  state.media.mainImage ||
+  state.media.mainImageRaw ||
+  "";
 
-    if(!src || !showByOutput(state,"image"))
-      return "";
+  if(!src || !showByOutput(state,"image"))
+    return "";
 
-    const img = `
+  const img = `
 <img
   src="${esc(src)}"
   alt=""
-  loading="lazy"
+  loading="eager"
+  fetchpriority="high"
   decoding="async"
   style="
     width:100%;
+    height:auto;
     border-radius:22px;
     margin-top:25px;
     display:block;
-    object-fit:cover;
+    object-fit:contain;
     box-shadow:
       0 0 35px rgba(0,0,0,.35),
       0 0 35px ${esc(state.theme.accent3)}55;
   "
->`;
+>
+`;
 
-    return state.media.mainImageLink
-      ? `<a href="${esc(state.media.mainImageLink)}" target="_blank" rel="noopener noreferrer">${img}</a>`
-      : img;
-  }
+  return state.media.mainImageLink
+    ? `<a href="${esc(state.media.mainImageLink)}" target="_blank" rel="noopener noreferrer">${img}</a>`
+    : img;
+}
 
-  /* =========================================================
-     LOGO
-  ========================================================= */
+/* =========================================================
+   LOGO
+========================================================= */
 
-  function buildLogo(state){
+function buildLogo(state){
 
-    const src = state.media.logo;
+  const src = state.media.logo;
 
-    if(!src) return "";
+  if(!src) return "";
 
-    const img = `
+  const img = `
 <img
   src="${esc(src)}"
   alt=""
+  loading="eager"
+  fetchpriority="high"
+  decoding="async"
   style="
     width:90px;
     height:90px;
@@ -86,13 +96,14 @@
     border:2px solid ${esc(state.theme.accent)};
     box-shadow:0 0 25px ${esc(state.theme.accent)};
   "
->`;
+>
+`;
 
-    const body = state.media.logoLink
-      ? `<a href="${esc(state.media.logoLink)}" target="_blank" rel="noopener noreferrer">${img}</a>`
-      : img;
+  const body = state.media.logoLink
+    ? `<a href="${esc(state.media.logoLink)}" target="_blank" rel="noopener noreferrer">${img}</a>`
+    : img;
 
-    return `
+  return `
 <div style="
   margin-top:20px;
   display:flex;
@@ -100,8 +111,7 @@
 ">
   ${body}
 </div>`;
-  }
-
+}
   /* =========================================================
      VIDEO
   ========================================================= */
@@ -483,13 +493,16 @@ style="
 
  function buildAudio(state){
 
-  /*
-    Se è presente un video MP4, l'audio separato viene disattivato.
-    Così non compaiono tasti YouTube/MP3 doppi o inutili.
-  */
-  if(state.media.videoUrl){
-    return "";
-  }
+ /*
+  Se è presente un video MP4 MA NON esiste un MP3 separato,
+  l'audio separato viene disattivato.
+*/
+if(
+  state.media.videoUrl &&
+  !state.media.mp3Url
+){
+  return "";
+}
 
   if(!showByOutput(state,"audio"))
     return "";

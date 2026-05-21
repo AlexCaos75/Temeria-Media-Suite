@@ -39,23 +39,25 @@
       accent4: "#6cff9f",
       glowPower: 55
     },
-    media: {
-      mainImage: "",
-      mainImageName: "",
-      mainImageLink: "",
-      logo: "",
-      logoName: "",
-      logoLink: "",
-      videoUrl: "",
-videoName: "",
-videoMode: "visible_controls",
-      audioMode: "yt_buttons",
-      youtubeAutoId: "",
-      youtubeButtonId: "",
-      mp3Url: "",
-      mp3Name: "",
-      mediaEngineMode: "temeria_v4"
-    },
+media: {
+  mainImage: "",
+  mainImageRaw: "",
+  mainImagePublic: "",
+  mainImageName: "",
+  mainImageLink: "",
+  logo: "",
+  logoName: "",
+  logoLink: "",
+  videoUrl: "",
+  videoName: "",
+  videoMode: "visible_controls",
+  audioMode: "yt_buttons",
+  youtubeAutoId: "",
+  youtubeButtonId: "",
+  mp3Url: "",
+  mp3Name: "",
+  mediaEngineMode: "temeria_v4"
+},
     github: {
       lastPublishedUrl: "",
       ogImageUrl: ""
@@ -167,7 +169,15 @@ state.style.textMood =
 
     state.theme = readThemeFromUI();
 
-    state.media.mainImage = old.media?.mainImage || getVal("gifurl").trim();
+    state.media.mainImage =
+  old.media?.mainImage ||
+  getVal("gifurl").trim();
+
+state.media.mainImageRaw =
+  old.media?.mainImageRaw || "";
+
+state.media.mainImagePublic =
+  old.media?.mainImagePublic || "";
     state.media.mainImageName = old.media?.mainImageName || "";
     state.media.mainImageLink = getVal("imglink").trim();
 
@@ -196,7 +206,8 @@ state.media.videoMode =
     state.media.mediaEngineMode = getVal("mediaEngineMode", "temeria_v4");
 
     state.github.lastPublishedUrl = old.github?.lastPublishedUrl || "";
-    state.github.ogImageUrl = "";
+    state.github.ogImageUrl =
+  old.github?.ogImageUrl || "";
 
     window.TemeriaForge.state = state;
     return state;
@@ -383,8 +394,18 @@ window.TemeriaForge.state.github.lastPublishedUrl = "";
         if(!window.TemeriaForge.state)
           window.TemeriaForge.state = clone(DEFAULT_STATE);
 
-        window.TemeriaForge.state.media[targetKey] = ev.target.result;
-        window.TemeriaForge.state.media[nameKey] = file.name || "local-file";
+       window.TemeriaForge.state.media[targetKey] =
+  ev.target.result;
+
+if(targetKey === "mainImage"){
+
+  window.TemeriaForge.state.media.mainImageRaw =
+    ev.target.result;
+
+}
+
+window.TemeriaForge.state.media[nameKey] =
+  file.name || "local-file";
 
         setVal(urlInputId, "");
 

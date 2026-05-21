@@ -480,16 +480,12 @@ async function uploadMainImageIfNeeded(
 
 const img =
   state?.media?.mainImageRaw ||
-  state?.media?.mainImagePublic ||
   state?.media?.mainImage ||
   "";
 
 if(
   !img ||
-  (
-    !img.startsWith("data:image/") &&
-    !img.startsWith("http")
-  )
+  !img.startsWith("data:image/")
 ){
 
     state.github.ogImageUrl =

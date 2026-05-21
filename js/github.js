@@ -484,11 +484,13 @@ const img =
   state?.media?.mainImage ||
   "";
 
-  if(
-    !img.startsWith(
-      "data:image/"
-    )
-  ){
+if(
+  !img ||
+  (
+    !img.startsWith("data:image/") &&
+    !img.startsWith("http")
+  )
+){
 
     state.github.ogImageUrl =
       CONFIG.fallbackOGImage;

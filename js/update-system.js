@@ -68,10 +68,9 @@ async function checkForUpdates() {
     const latest =
       manifest.version || "0.0.0";
 
-    const current =
-      typeof APP_VERSION !== "undefined"
-        ? APP_VERSION
-        : "0.0.0";
+   const current =
+  window.TemeriaForge?.VERSION ||
+  "0.0.0";
 
     const cmp =
       compareVersions(latest, current);

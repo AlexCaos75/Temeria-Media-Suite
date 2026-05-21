@@ -478,8 +478,9 @@ async function uploadMainImageIfNeeded(
   token
 ){
 
- const img =
+const img =
   state?.media?.mainImageRaw ||
+  state?.media?.mainImagePublic ||
   state?.media?.mainImage ||
   "";
 

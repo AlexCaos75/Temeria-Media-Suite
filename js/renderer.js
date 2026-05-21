@@ -371,8 +371,9 @@ function buildOGMeta(state, url){
     "Card creata con Temeria Media Forge";
 
  const image =
+  state.media?.mainImagePublic ||
   state.github?.ogImageUrl ||
-  state.media?.mainImage ||
+  CONFIG?.fallbackOGImage ||
   "";
 
  let img =

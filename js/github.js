@@ -552,7 +552,12 @@ state.media.mainImage =
 
 state.media.mainImagePublic =
   publicImageUrl;
+/* =========================
+   FORCE PUBLIC IMAGE
+========================= */
 
+state.media.mainImage =
+  publicImageUrl;
 /* =========================
    OG IMAGE
 ========================= */

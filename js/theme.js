@@ -235,8 +235,6 @@ const PRESET_GLOWS = {
 };
 function applyThemeToUI() {
   const presetId = document.getElementById("themePreset")?.value || "fantasy";
-  const presetDescription =
-  document.getElementById("presetDescription");
 
 const presetIcon =
   document.getElementById("presetIcon");

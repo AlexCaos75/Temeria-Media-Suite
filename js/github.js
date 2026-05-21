@@ -204,7 +204,19 @@ async function publishCardToGitHub(){
         state,
         { publicUrl }
       );
+/* render */
+let html =
+  window.TemeriaRenderer.buildStandaloneHTML(
+    state,
+    { publicUrl }
+  );
 
+/* inject OG meta WhatsApp */
+html =
+  window.TemeriaExport.injectOGMeta(
+    html,
+    state
+  );
     /* 🔥 QUI IL FIX REALE */
     html = injectOG(html, state);
 

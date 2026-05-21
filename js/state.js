@@ -169,15 +169,17 @@ state.style.textMood =
 
     state.theme = readThemeFromUI();
 
-    state.media.mainImage =
-  old.media?.mainImage ||
-  getVal("gifurl").trim();
-
-state.media.mainImageRaw =
+  state.media.mainImageRaw =
   old.media?.mainImageRaw || "";
+
+state.media.mainImage =
+  old.media?.mainImage ||
+  state.media.mainImageRaw ||
+  getVal("gifurl").trim();
 
 state.media.mainImagePublic =
   old.media?.mainImagePublic || "";
+  
     state.media.mainImageName = old.media?.mainImageName || "";
     state.media.mainImageLink = getVal("imglink").trim();
 

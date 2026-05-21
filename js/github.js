@@ -198,22 +198,22 @@ async function publishCardToGitHub(){
     /* upload immagine */
     await uploadImage(state, slug + "-" + id, token);
 
-    /* render */
-    let html =
-      window.TemeriaRenderer.buildStandaloneHTML(
-        state,
-        { publicUrl }
-      );
+ /* render */
+let html =
+  window.TemeriaRenderer.buildStandaloneHTML(
+    state,
+    { publicUrl }
+  );
 
-    /* 🔥 QUI IL FIX REALE */
-    html = injectOG(html, state);
+/* inject OG */
+html = injectOG(html, state);
 
-    /* upload html */
-    await uploadFile(
-      `${CONFIG.cardsFolder}/${fileName}`,
-      safeBase64Unicode(html),
-      token
-    );
+/* upload html */
+await uploadFile(
+  `${CONFIG.cardsFolder}/${fileName}`,
+  safeBase64Unicode(html),
+  token
+);
 
     await delay(CONFIG.whatsappSafetyDelay);
 

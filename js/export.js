@@ -6,9 +6,9 @@
 (function(){
   "use strict";
 
-  const PUBLIC_BASE_URL = "https://temeria.vercel.app/";
-  const THUMB_FOLDER = "assets/thumb/";
-  const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + THUMB_FOLDER + "default.jpg";
+const PUBLIC_BASE_URL = "https://alexcaos75.github.io/Temeria-Media-Suite/";
+const THUMB_FOLDER = "assets/thumb/";
+const DEFAULT_OG_IMAGE = PUBLIC_BASE_URL + THUMB_FOLDER + "default.jpg";
 
   function slugify(text){
     return String(text || "temeria-card")

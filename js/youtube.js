@@ -342,29 +342,15 @@ allowfullscreen>
 function openYouTube() {
 
   const id =
-
-    document.getElementById(
-      "ytid_auto"
-    )?.value
-
+    document.getElementById("ytid_auto")?.value
     ||
-
-    document.getElementById(
-      "ytid_btn"
-    )?.value
-
+    document.getElementById("ytid_btn")?.value
     ||
-
     "";
 
   if (!id) {
-
-    alert(
-      "Nessun ID YouTube."
-    );
-
+    alert("Nessun ID YouTube.");
     return;
-
   }
 
   window.open(

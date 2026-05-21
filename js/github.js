@@ -125,8 +125,10 @@ async function uploadImage(state, slug, token){
 
   const publicUrl = `${CONFIG.base}/${path}`;
 
-  state.github.ogImageUrl = publicUrl;
-  state.media.mainImage = publicUrl;
+ const publicUrl = `${CONFIG.base}/${path}`;
+
+state.github.ogImageUrl = publicUrl;
+state.media.mainImagePublic = publicUrl;
 
   return state;
 }

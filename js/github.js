@@ -23,7 +23,7 @@ const CONFIG = {
   videoFolder: "assets/video",
 
   fallbackOGImage:
-    "https://temeria.vercel.app/assets/default-og.jpg",
+  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/default-og.jpg",
 
   retryAttempts: 3,
   retryDelay: 1200,
@@ -881,24 +881,13 @@ log(
   molto tempo a propagare i video.
 */
 
-if(
-  state.github?.ogImageUrl &&
-  !state.github?.hasHeavyVideo
-){
+/* =========================
+   SKIP OG VERIFY
+========================= */
 
-  const ogVerified =
-    await verifyPublishedResource(
-      state.github.ogImageUrl,
-      "OG image"
-    );
-
-  if(!ogVerified){
-
-    console.warn(
-      "OG image non ancora propagata."
-    );
-  }
-}
+log(
+  "Verify OG saltata."
+);
 
     /* =========================
        WHATSAPP SAFETY DELAY

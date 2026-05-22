@@ -443,25 +443,7 @@ button,a{font-family:Orbitron,Arial,sans-serif;}
 </head>
 <body>
 ${card}
-<script>
-window.addEventListener("load",()=>{
-
-  setTimeout(()=>{
-
-    try{
-
-      ${Media().publicPlayerScript()}
-
-    }catch(e){
-
-      console.warn(e);
-
-    }
-
-  },1200);
-
-});
-</script>
+${Media().publicPlayerScript()}
 </body>
 </html>`;
   }

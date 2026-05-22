@@ -31,9 +31,21 @@
   }
 
   const autoG = debounce(() => {
-    if(!autoGenerateEnabled) return;
-    if(typeof window.genera === "function") window.genera();
-  }, 300);
+
+  if(!autoGenerateEnabled)
+    return;
+
+  if(typeof window.genera === "function") {
+
+    requestAnimationFrame(() => {
+
+      window.genera();
+
+    });
+
+  }
+
+}, 700);
 
   function bindAutoGenerate(){
     document.querySelectorAll("input, textarea, select").forEach(el => {

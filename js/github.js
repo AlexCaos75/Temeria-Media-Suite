@@ -20,9 +20,9 @@ const CONFIG = {
   githubApi: "https://api.github.com",
   base: "https://alexcaos75.github.io/Temeria-Media-Suite",
 
-  retryAttempts: 20,
-  retryDelay: 3000,
-  whatsappSafetyDelay: 5000,
+  retryAttempts: 8,
+  retryDelay: 1500,
+  whatsappSafetyDelay: 2500,
   enableCacheBuster: true
 };
 
@@ -56,9 +56,6 @@ function getExt(dataUrl){
   if(dataUrl.includes("gif")) return "gif";
   if(dataUrl.includes("jpeg")) return "jpg";
   if(dataUrl.includes("jpg")) return "jpg";
-  if(dataUrl.includes("mp4")) return "mp4";
-  if(dataUrl.includes("mp3")) return "mp3";
-  if(dataUrl.includes("wav")) return "wav";
   return "bin";
 }
 
@@ -85,18 +82,10 @@ async function waitForPublicUrl(url, label = "file"){
         return true;
       }
 
-      console.warn(
-        `[TEMERIA PUBLISH] ${label} non ancora online`,
-        i,
-        res.status
-      );
+      console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, res.status);
 
     }catch(err){
-      console.warn(
-        `[TEMERIA PUBLISH] ${label} non ancora online`,
-        i,
-        err
-      );
+      console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, err);
     }
 
     await delay(CONFIG.retryDelay);
@@ -140,9 +129,14 @@ async function uploadImage(state, imageSlug, token){
 
   if(!img || !img.startsWith("data:image/")){
     const fallback = CONFIG.fallbackOGImage;
+
     state.github.ogImageUrl = fallback;
+
     state.media.mainImagePublic =
-      state.media.mainImagePublic || state.media.mainImage || "";
+      state.media.mainImagePublic ||
+      state.media.mainImage ||
+      "";
+
     return fallback;
   }
 
@@ -159,7 +153,15 @@ async function uploadImage(state, imageSlug, token){
   console.log("[TEMERIA PUBLISH] Upload immagine:", path);
 
   await uploadFile(path, base64, token);
-  await waitForPublicUrl(publicUrl, "immagine");
+
+  try{
+    await waitForPublicUrl(publicUrl, "immagine");
+  }catch(err){
+    console.warn(
+      "[TEMERIA PUBLISH] immagine non ancora propagata GitHub Pages",
+      err
+    );
+  }
 
   state.github.ogImageUrl = publicUrl;
   state.media.mainImagePublic = publicUrl;
@@ -178,9 +180,11 @@ function injectOG(html, state, publicUrl, ogImageUrl, stamp){
     "Card creata con Temeria Media Forge";
 
   const finalImage =
-    ogImageUrl || CONFIG.fallbackOGImage;
+    ogImageUrl ||
+    CONFIG.fallbackOGImage;
 
-  const finalImageCached = withCache(finalImage, stamp);
+  const finalImageCached =
+    withCache(finalImage, stamp);
 
   const og = `
 <meta property="og:type" content="website">
@@ -221,7 +225,8 @@ async function publishCardToGitHub(){
       return;
     }
 
-    let state = window.TemeriaForge.collectState();
+    let state =
+      window.TemeriaForge.collectState();
 
     state.github = state.github || {};
     state.media = state.media || {};
@@ -281,7 +286,14 @@ async function publishCardToGitHub(){
       token
     );
 
-    await waitForPublicUrl(publicUrl, "card");
+    try{
+      await waitForPublicUrl(publicUrl, "card");
+    }catch(err){
+      console.warn(
+        "[TEMERIA PUBLISH] card non ancora propagata GitHub Pages",
+        err
+      );
+    }
 
     await delay(CONFIG.whatsappSafetyDelay);
 
@@ -292,9 +304,12 @@ async function publishCardToGitHub(){
       window.TemeriaForge.saveState();
     }
 
-    alert("Card pubblicata e verificata:\n" + publicUrl);
+    alert("Card pubblicata:\n" + publicUrl);
 
-    window.open(withCache(publicUrl, stamp), "_blank");
+    window.open(
+      withCache(publicUrl, stamp),
+      "_blank"
+    );
 
     return publicUrl;
 

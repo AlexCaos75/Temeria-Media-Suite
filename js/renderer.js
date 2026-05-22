@@ -370,27 +370,27 @@ function buildOGMeta(state, url){
     state.content.phrase ||
     "Card creata con Temeria Media Forge";
 
-const image =
-  state.media?.mainImagePublic ||
-  state.github?.ogImageUrl ||
-  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
+  const image =
+    state.media?.mainImagePublic ||
+    state.github?.ogImageUrl ||
+    "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
 
-let img = image;
+  let img = image;
 
-if(
-  image &&
-  !image.startsWith("data:") &&
-  !image.startsWith("blob:")
-){
-  img = image.startsWith("http")
-    ? image
-    : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
-      image.replace(/^\/+/, "");
+  if(
+    image &&
+    !image.startsWith("data:") &&
+    !image.startsWith("blob:")
+  ){
 
-  img += (img.includes("?") ? "&" : "?") +
-         "v=" + Date.now();
-}
-return `
+    img = image.startsWith("http")
+      ? image
+      : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
+        image.replace(/^\/+/, "");
+
+  }
+
+  return `
 <meta property="og:title" content="${html(title)}">
 <meta property="og:description" content="${html(desc)}">
 <meta property="og:type" content="website">
@@ -398,7 +398,7 @@ return `
 
 <meta property="og:image" content="${esc(img)}">
 <meta property="og:image:secure_url" content="${esc(img)}">
-
+<meta property="og:image:type" content="image/png">
 
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">

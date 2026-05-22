@@ -80,9 +80,13 @@ function safeGenerate(){
     window.__ytGenerateTimer =
       setTimeout(()=>{
 
-        genera();
+        requestAnimationFrame(()=>{
 
-      }, 250);
+          genera();
+
+        });
+
+      }, 600);
 
   }
 

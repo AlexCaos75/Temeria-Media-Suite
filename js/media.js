@@ -717,8 +717,8 @@ setTimeout(()=>{
 
   hiddenVideos.forEach(v=>{
 
-    v.volume = 1;
-    v.muted = false;
+   v.volume = 0;
+v.muted = true;
 
     const p = v.play();
 

@@ -66,6 +66,29 @@ function getYTPasteId() {
 }
 
 /* =========================
+   SAFE GENERATE
+========================= */
+
+function safeGenerate(){
+
+  if(typeof genera === "function"){
+
+    clearTimeout(
+      window.__ytGenerateTimer
+    );
+
+    window.__ytGenerateTimer =
+      setTimeout(()=>{
+
+        genera();
+
+      }, 250);
+
+  }
+
+}
+
+/* =========================
    PASTE TO AUTO
 ========================= */
 
@@ -97,14 +120,7 @@ function pasteToAuto() {
 
   updateYoutubeThumb();
 
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  safeGenerate();
 
 }
 
@@ -140,14 +156,7 @@ function pasteToButtons() {
 
   updateYoutubeThumb();
 
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  safeGenerate();
 
 }
 
@@ -178,14 +187,7 @@ function applyYTPresetToAuto() {
 
   updateYoutubeThumb();
 
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  safeGenerate();
 
 }
 
@@ -216,14 +218,7 @@ function applyYTPresetToButtons() {
 
   updateYoutubeThumb();
 
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  safeGenerate();
 
 }
 
@@ -489,14 +484,7 @@ function clearYoutubeFields() {
 
   updateYoutubeThumb();
 
-  if (
-    typeof genera ===
-    "function"
-  ) {
-
-    genera();
-
-  }
+  safeGenerate();
 
 }
 

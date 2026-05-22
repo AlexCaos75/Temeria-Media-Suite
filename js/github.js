@@ -6,10 +6,6 @@
 (function(){
 "use strict";
 
-/* =========================================================
-   CONFIG
-========================================================= */
-
 const CONFIG = {
   user: "AlexCaos75",
   repo: "Temeria-Media-Suite",
@@ -24,17 +20,13 @@ const CONFIG = {
   githubApi: "https://api.github.com",
   base: "https://alexcaos75.github.io/Temeria-Media-Suite",
 
-  retryAttempts: 8,
-  retryDelay: 1500,
-  whatsappSafetyDelay: 2500,
+  retryAttempts: 20,
+  retryDelay: 3000,
+  whatsappSafetyDelay: 5000,
   enableCacheBuster: true
 };
 
 let publishLock = false;
-
-/* =========================================================
-   UTILS
-========================================================= */
 
 function delay(ms){
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -78,14 +70,10 @@ function escapeHTML(str){
     .replace(/"/g,"&quot;");
 }
 
-/* =========================================================
-   VERIFY PUBLIC URL
-========================================================= */
-
 async function waitForPublicUrl(url, label = "file"){
-  const cleanUrl = withCache(url);
-
   for(let i = 1; i <= CONFIG.retryAttempts; i++){
+    const cleanUrl = withCache(url, Date.now() + i);
+
     try{
       const res = await fetch(cleanUrl, {
         method: "GET",
@@ -96,8 +84,19 @@ async function waitForPublicUrl(url, label = "file"){
         console.log(`[TEMERIA PUBLISH] ${label} online:`, url);
         return true;
       }
+
+      console.warn(
+        `[TEMERIA PUBLISH] ${label} non ancora online`,
+        i,
+        res.status
+      );
+
     }catch(err){
-      console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, err);
+      console.warn(
+        `[TEMERIA PUBLISH] ${label} non ancora online`,
+        i,
+        err
+      );
     }
 
     await delay(CONFIG.retryDelay);
@@ -105,10 +104,6 @@ async function waitForPublicUrl(url, label = "file"){
 
   throw new Error(`${label} non raggiungibile online: ${url}`);
 }
-
-/* =========================================================
-   GITHUB UPLOAD
-========================================================= */
 
 async function uploadFile(path, base64, token){
   const api =
@@ -137,10 +132,6 @@ async function uploadFile(path, base64, token){
   return data;
 }
 
-/* =========================================================
-   IMAGE UPLOAD
-========================================================= */
-
 async function uploadImage(state, imageSlug, token){
   const img =
     state?.media?.mainImageRaw ||
@@ -168,7 +159,6 @@ async function uploadImage(state, imageSlug, token){
   console.log("[TEMERIA PUBLISH] Upload immagine:", path);
 
   await uploadFile(path, base64, token);
-
   await waitForPublicUrl(publicUrl, "immagine");
 
   state.github.ogImageUrl = publicUrl;
@@ -176,10 +166,6 @@ async function uploadImage(state, imageSlug, token){
 
   return publicUrl;
 }
-
-/* =========================================================
-   OG INJECT
-========================================================= */
 
 function injectOG(html, state, publicUrl, ogImageUrl, stamp){
   const title =
@@ -221,10 +207,6 @@ function injectOG(html, state, publicUrl, ogImageUrl, stamp){
 
   return og + html;
 }
-
-/* =========================================================
-   MAIN PUBLISH
-========================================================= */
 
 async function publishCardToGitHub(){
   if(publishLock) return;
@@ -270,7 +252,6 @@ async function publishCardToGitHub(){
     console.log("[TEMERIA PUBLISH] Preparazione publish...");
     console.log("[TEMERIA PUBLISH] URL card:", publicUrl);
 
-    /* 1. Upload immagine */
     const ogImageUrl =
       await uploadImage(
         state,
@@ -278,14 +259,12 @@ async function publishCardToGitHub(){
         token
       );
 
-    /* 2. Genera HTML con URL pubblico definitivo */
     let html =
       window.TemeriaRenderer.buildStandaloneHTML(
         state,
         { publicUrl }
       );
 
-    /* 3. Forza OG definitivo */
     html = injectOG(
       html,
       state,
@@ -294,7 +273,6 @@ async function publishCardToGitHub(){
       stamp
     );
 
-    /* 4. Upload card */
     console.log("[TEMERIA PUBLISH] Upload card:", cardPath);
 
     await uploadFile(
@@ -303,10 +281,8 @@ async function publishCardToGitHub(){
       token
     );
 
-    /* 5. Verifica card online */
     await waitForPublicUrl(publicUrl, "card");
 
-    /* 6. Piccola sicurezza WhatsApp */
     await delay(CONFIG.whatsappSafetyDelay);
 
     state.github.lastPublishedUrl = publicUrl;
@@ -329,10 +305,6 @@ async function publishCardToGitHub(){
     publishLock = false;
   }
 }
-
-/* =========================================================
-   API
-========================================================= */
 
 window.publishCardToGitHub = publishCardToGitHub;
 

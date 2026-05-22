@@ -13,24 +13,12 @@
     const mode = state.style.outputMode;
 
     if(mode === "minimal") return false;
-
-    if(type === "image" && mode === "music_focus")
-      return false;
-
-    if(type === "video" &&
-      ["music_focus","image_focus"].includes(mode))
-      return false;
-
-    if(type === "audio" &&
-      ["image_focus","video_focus"].includes(mode))
-      return false;
+    if(type === "image" && mode === "music_focus") return false;
+    if(type === "video" && ["music_focus","image_focus"].includes(mode)) return false;
+    if(type === "audio" && ["image_focus","video_focus"].includes(mode)) return false;
 
     return true;
   }
-
-  /* =========================================================
-     MAIN IMAGE
-  ========================================================= */
 
   function buildMainImage(state){
     const src =
@@ -39,8 +27,7 @@
       state.media.mainImageRaw ||
       "";
 
-    if(!src || !showByOutput(state,"image"))
-      return "";
+    if(!src || !showByOutput(state,"image")) return "";
 
     const img = `
 <img
@@ -68,13 +55,8 @@
       : img;
   }
 
-  /* =========================================================
-     LOGO
-  ========================================================= */
-
   function buildLogo(state){
     const src = state.media.logo;
-
     if(!src) return "";
 
     const img = `
@@ -109,10 +91,6 @@
 </div>`;
   }
 
-  /* =========================================================
-     VIDEO
-  ========================================================= */
-
   function buildVideo(state){
     if(!state.media.videoUrl || !showByOutput(state,"video")){
       return "";
@@ -121,10 +99,6 @@
     const mode =
       state.media.videoMode ||
       "visible_controls";
-
-    /* ===============================
-       VIDEO VISIBILE CONTROLLI NATIVI
-    =============================== */
 
     if(mode === "visible_controls"){
       return `
@@ -142,10 +116,6 @@
   "
 ></video>`;
     }
-
-    /* ===============================
-       VIDEO VISIBILE TASTI TEMERIA
-    =============================== */
 
     if(mode === "visible_temeria"){
       const id =
@@ -203,11 +173,6 @@
 </div>`;
     }
 
-    /* ===============================
-       VIDEO INVISIBILE SAFE
-       autoplay muted + bottone audio
-    =============================== */
-
     if(mode === "hidden_autoplay"){
       const id =
         "temeriaHidden_" +
@@ -254,11 +219,6 @@
 </button>`;
     }
 
-    /* ===============================
-       VIDEO INVISIBILE AUDIO ATTIVO
-       vecchio trucco birichino
-    =============================== */
-
     if(mode === "hidden_autoplay_audio"){
       const id =
         "temeriaHiddenAudio_" +
@@ -288,10 +248,6 @@
 
     return "";
   }
-
-  /* =========================================================
-     YOUTUBE
-  ========================================================= */
 
   function buildYoutubeURL(id, autoplay = false){
     return `https://www.youtube.com/embed/${id}?` +
@@ -404,10 +360,6 @@
 </div>`;
   }
 
-  /* =========================================================
-     MP3
-  ========================================================= */
-
   function buildMP3(state){
     if(!state.media.mp3Url) return "";
 
@@ -459,15 +411,8 @@
 </div>`;
   }
 
-  /* =========================================================
-     AUDIO ROUTER
-  ========================================================= */
-
   function buildAudio(state){
-    if(
-      state.media.videoUrl &&
-      !state.media.mp3Url
-    ){
+    if(state.media.videoUrl && !state.media.mp3Url){
       return "";
     }
 
@@ -494,10 +439,6 @@
 
     return "";
   }
-
-  /* =========================================================
-     PUBLIC PLAYER
-  ========================================================= */
 
   function publicPlayerScript(){
     return `
@@ -595,29 +536,9 @@ setTimeout(function(){
     }
   });
 
-  var audioVideos =
-    document.querySelectorAll(".temeria-hidden-autoplay-audio");
-
-  audioVideos.forEach(function(v){
-    v.muted = false;
-    v.volume = 1;
-
-    var p = v.play();
-
-    if(p){
-      p.catch(function(err){
-        console.log("TEMERIA AUDIO AUTOPLAY BLOCK", err);
-      });
-    }
-  });
-
 },800);
 <\/script>`;
   }
-
-  /* =========================================================
-     PLAYER GLOBALE PREVIEW LIVE
-  ========================================================= */
 
   window.TemeriaPublicPlayer =
   window.TemeriaPublicPlayer || {
@@ -688,12 +609,7 @@ setTimeout(function(){
     }
   };
 
-  /* =========================================================
-     AUTOPLAY LIVE PREVIEW
-  ========================================================= */
-
   setTimeout(function(){
-
     const safeVideos =
       document.querySelectorAll(".temeria-hidden-autoplay");
 
@@ -703,17 +619,6 @@ setTimeout(function(){
       const p = v.play();
       if(p) p.catch(function(){});
     });
-
-    const audioVideos =
-      document.querySelectorAll(".temeria-hidden-autoplay-audio");
-
-    audioVideos.forEach(function(v){
-      v.muted = false;
-      v.volume = 1;
-      const p = v.play();
-      if(p) p.catch(function(){});
-    });
-
   },800);
 
   window.TemeriaMedia = {

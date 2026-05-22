@@ -1,6 +1,6 @@
 /* =========================================================
    TEMERIA MEDIA FORGE V5
-   ULTRA STABLE GITHUB PUBLISH ENGINE + OG FIX
+   ULTRA STABLE GITHUB PUBLISH ENGINE
 ========================================================= */
 
 (function(){
@@ -11,29 +11,23 @@
 ========================================================= */
 
 const CONFIG = {
-
   user: "AlexCaos75",
   repo: "Temeria-Media-Suite",
   branch: "main",
 
   cardsFolder: "cards",
   imgFolder: "assets/img",
-  audioFolder: "assets/audio",
-  videoFolder: "assets/video",
 
   fallbackOGImage:
-  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg",
-
-  retryAttempts: 3,
-  retryDelay: 1200,
-
-  whatsappSafetyDelay: 2500,
-
-  enableCacheBuster: true,
+    "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg",
 
   githubApi: "https://api.github.com",
-  base:
-  "https://alexcaos75.github.io/Temeria-Media-Suite"
+  base: "https://alexcaos75.github.io/Temeria-Media-Suite",
+
+  retryAttempts: 8,
+  retryDelay: 1500,
+  whatsappSafetyDelay: 2500,
+  enableCacheBuster: true
 };
 
 let publishLock = false;
@@ -43,18 +37,19 @@ let publishLock = false;
 ========================================================= */
 
 function delay(ms){
-  return new Promise(r=>setTimeout(r, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function withCache(url){
+function withCache(url, stamp){
   if(!CONFIG.enableCacheBuster) return url;
-  return url + (url.includes("?") ? "&" : "?") + "v=" + Date.now();
+  const v = stamp || Date.now();
+  return url + (url.includes("?") ? "&" : "?") + "v=" + v;
 }
 
 function safeBase64Unicode(str){
   const bytes = new TextEncoder().encode(str);
   let binary = "";
-  bytes.forEach(b=>binary+=String.fromCharCode(b));
+  bytes.forEach(b => binary += String.fromCharCode(b));
   return btoa(binary);
 }
 
@@ -63,23 +58,59 @@ function extractBase64(dataUrl){
 }
 
 function getExt(dataUrl){
+  if(!dataUrl) return "bin";
   if(dataUrl.includes("png")) return "png";
   if(dataUrl.includes("webp")) return "webp";
   if(dataUrl.includes("gif")) return "gif";
   if(dataUrl.includes("jpeg")) return "jpg";
   if(dataUrl.includes("jpg")) return "jpg";
+  if(dataUrl.includes("mp4")) return "mp4";
   if(dataUrl.includes("mp3")) return "mp3";
   if(dataUrl.includes("wav")) return "wav";
-  if(dataUrl.includes("mp4")) return "mp4";
   return "bin";
 }
 
+function escapeHTML(str){
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
 /* =========================================================
-   GITHUB
+   VERIFY PUBLIC URL
+========================================================= */
+
+async function waitForPublicUrl(url, label = "file"){
+  const cleanUrl = withCache(url);
+
+  for(let i = 1; i <= CONFIG.retryAttempts; i++){
+    try{
+      const res = await fetch(cleanUrl, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if(res.ok){
+        console.log(`[TEMERIA PUBLISH] ${label} online:`, url);
+        return true;
+      }
+    }catch(err){
+      console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, err);
+    }
+
+    await delay(CONFIG.retryDelay);
+  }
+
+  throw new Error(`${label} non raggiungibile online: ${url}`);
+}
+
+/* =========================================================
+   GITHUB UPLOAD
 ========================================================= */
 
 async function uploadFile(path, base64, token){
-
   const api =
     `${CONFIG.githubApi}/repos/${CONFIG.user}/${CONFIG.repo}/contents/${path}`;
 
@@ -90,7 +121,7 @@ async function uploadFile(path, base64, token){
       "Content-Type":"application/json"
     },
     body: JSON.stringify({
-      message: "upload " + path,
+      message: "publish " + path,
       content: base64,
       branch: CONFIG.branch
     })
@@ -98,75 +129,97 @@ async function uploadFile(path, base64, token){
 
   const data = await res.json();
 
-  if(!res.ok) throw new Error("Upload fail " + path);
+  if(!res.ok){
+    console.error("[TEMERIA PUBLISH] Upload fail:", data);
+    throw new Error("Upload fail " + path);
+  }
 
   return data;
 }
 
 /* =========================================================
-   MEDIA
+   IMAGE UPLOAD
 ========================================================= */
 
-async function uploadImage(state, slug, token){
-
-  const img = state?.media?.mainImageRaw;
+async function uploadImage(state, imageSlug, token){
+  const img =
+    state?.media?.mainImageRaw ||
+    state?.media?.mainImage ||
+    "";
 
   if(!img || !img.startsWith("data:image/")){
-    state.github.ogImageUrl = CONFIG.fallbackOGImage;
-    return state;
+    const fallback = CONFIG.fallbackOGImage;
+    state.github.ogImageUrl = fallback;
+    state.media.mainImagePublic =
+      state.media.mainImagePublic || state.media.mainImage || "";
+    return fallback;
   }
 
   const ext = getExt(img);
   const base64 = extractBase64(img);
 
-  const path = `${CONFIG.imgFolder}/${slug}.${ext}`;
+  if(!base64){
+    throw new Error("Immagine non valida");
+  }
+
+  const path = `${CONFIG.imgFolder}/${imageSlug}.${ext}`;
+  const publicUrl = `${CONFIG.base}/${path}`;
+
+  console.log("[TEMERIA PUBLISH] Upload immagine:", path);
 
   await uploadFile(path, base64, token);
 
-  const publicUrl = `${CONFIG.base}/${path}`;
+  await waitForPublicUrl(publicUrl, "immagine");
 
-state.github.ogImageUrl = publicUrl;
-state.media.mainImagePublic = publicUrl;
+  state.github.ogImageUrl = publicUrl;
+  state.media.mainImagePublic = publicUrl;
 
-  return state;
+  return publicUrl;
 }
 
 /* =========================================================
-   OG FIX (QUI STA LA MAGIA)
+   OG INJECT
 ========================================================= */
 
-function injectOG(html, state){
+function injectOG(html, state, publicUrl, ogImageUrl, stamp){
+  const title =
+    state.content?.title ||
+    "Temeria Card";
 
-  const title = state.content?.title || "Temeria";
   const desc =
     state.content?.phrase ||
     state.content?.text ||
-    "Temeria Media Forge";
+    "Card creata con Temeria Media Forge";
 
-  const img =
-    state.github?.ogImageUrl ||
-    CONFIG.fallbackOGImage;
+  const finalImage =
+    ogImageUrl || CONFIG.fallbackOGImage;
+
+  const finalImageCached = withCache(finalImage, stamp);
 
   const og = `
 <meta property="og:type" content="website">
-<meta property="og:title" content="${title}">
-<meta property="og:description" content="${desc}">
-<meta property="og:image" content="${img}">
+<meta property="og:title" content="${escapeHTML(title)}">
+<meta property="og:description" content="${escapeHTML(desc)}">
+<meta property="og:url" content="${escapeHTML(publicUrl)}">
+<meta property="og:image" content="${escapeHTML(finalImageCached)}">
+<meta property="og:image:secure_url" content="${escapeHTML(finalImageCached)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="${img}">
+<meta name="twitter:title" content="${escapeHTML(title)}">
+<meta name="twitter:description" content="${escapeHTML(desc)}">
+<meta name="twitter:image" content="${escapeHTML(finalImageCached)}">
 `;
 
-  html = html.replace(/<meta property="og:[^>]+>/g,"");
-  html = html.replace(/<meta name="twitter:[^>]+>/g,"");
+  html = html.replace(/<meta property="og:[^>]*>/g, "");
+  html = html.replace(/<meta name="twitter:[^>]*>/g, "");
 
- if (html.includes("</head>")) {
-  return html.replace("</head>", og + "</head>");
-}
+  if(html.includes("</head>")){
+    return html.replace("</head>", og + "\n</head>");
+  }
 
-/* fallback ultra safe */
-return og + html;
+  return og + html;
 }
 
 /* =========================================================
@@ -174,63 +227,107 @@ return og + html;
 ========================================================= */
 
 async function publishCardToGitHub(){
-
   if(publishLock) return;
+
   publishLock = true;
 
   try{
-
     const token = localStorage.getItem("TEMERIA_GITHUB_TOKEN");
+
     if(!token){
       alert("Token GitHub mancante");
       return;
     }
 
     let state = window.TemeriaForge.collectState();
-    state.github = {};
+
+    state.github = state.github || {};
+    state.media = state.media || {};
+
+    const rawTitle =
+      state.content?.title ||
+      "temeria-card";
 
     const slug =
-      window.TemeriaExport.slugify(
-        state.content.title
-      );
+      window.TemeriaExport?.slugify
+        ? window.TemeriaExport.slugify(rawTitle)
+        : rawTitle
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g,"-")
+            .replace(/^-|-$/g,"");
 
-    const id = Date.now();
-    const fileName = `${slug}-${id}.html`;
+    const stamp = Date.now();
+
+    const fileName =
+      `${slug || "temeria-card"}-${stamp}.html`;
+
+    const cardPath =
+      `${CONFIG.cardsFolder}/${fileName}`;
 
     const publicUrl =
-      `${CONFIG.base}/${CONFIG.cardsFolder}/${fileName}`;
+      `${CONFIG.base}/${cardPath}`;
 
-    /* upload immagine */
-    await uploadImage(state, slug + "-" + id, token);
+    console.log("[TEMERIA PUBLISH] Preparazione publish...");
+    console.log("[TEMERIA PUBLISH] URL card:", publicUrl);
 
- /* render */
-let html =
-  window.TemeriaRenderer.buildStandaloneHTML(
-    state,
-    { publicUrl }
-  );
+    /* 1. Upload immagine */
+    const ogImageUrl =
+      await uploadImage(
+        state,
+        `${slug || "temeria-image"}-${stamp}`,
+        token
+      );
 
-/* inject OG */
-html = injectOG(html, state);
+    /* 2. Genera HTML con URL pubblico definitivo */
+    let html =
+      window.TemeriaRenderer.buildStandaloneHTML(
+        state,
+        { publicUrl }
+      );
 
-/* upload html */
-await uploadFile(
-  `${CONFIG.cardsFolder}/${fileName}`,
-  safeBase64Unicode(html),
-  token
-);
+    /* 3. Forza OG definitivo */
+    html = injectOG(
+      html,
+      state,
+      publicUrl,
+      ogImageUrl,
+      stamp
+    );
 
+    /* 4. Upload card */
+    console.log("[TEMERIA PUBLISH] Upload card:", cardPath);
+
+    await uploadFile(
+      cardPath,
+      safeBase64Unicode(html),
+      token
+    );
+
+    /* 5. Verifica card online */
+    await waitForPublicUrl(publicUrl, "card");
+
+    /* 6. Piccola sicurezza WhatsApp */
     await delay(CONFIG.whatsappSafetyDelay);
 
-    alert("Pubblicata:\n" + publicUrl);
-    window.open(withCache(publicUrl));
+    state.github.lastPublishedUrl = publicUrl;
+    state.github.ogImageUrl = ogImageUrl;
+
+    if(window.TemeriaForge.saveState){
+      window.TemeriaForge.saveState();
+    }
+
+    alert("Card pubblicata e verificata:\n" + publicUrl);
+
+    window.open(withCache(publicUrl, stamp), "_blank");
+
+    return publicUrl;
 
   }catch(err){
-    console.error(err);
-    alert("Errore publish");
+    console.error("[TEMERIA PUBLISH] Errore:", err);
+    alert("Errore publish:\n" + err.message);
+  }finally{
+    publishLock = false;
   }
-
-  publishLock = false;
 }
 
 /* =========================================================

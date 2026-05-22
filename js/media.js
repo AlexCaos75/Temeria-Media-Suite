@@ -249,6 +249,7 @@ style="
   class="temeria-hidden-autoplay"
   src="${esc(state.media.videoUrl)}"
   autoplay
+  muted
   loop
   playsinline
   preload="auto"

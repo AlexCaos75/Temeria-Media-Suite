@@ -235,10 +235,18 @@ style="
      VIDEO INVISIBILE AUTOPLAY
   ========================================= */
 
-  if(mode === "hidden_autoplay"){
+ if(mode === "hidden_autoplay"){
 
-    return `
+  const id =
+    "temeriaHidden_" +
+    Math.random()
+    .toString(36)
+    .slice(2,9);
+
+  return `
 <video
+  id="${id}"
+  class="temeria-hidden-autoplay"
   src="${esc(state.media.videoUrl)}"
   autoplay
   loop
@@ -254,7 +262,7 @@ style="
     pointer-events:none;
   "
 ></video>`;
-  }
+}
 
   return "";
 }
@@ -696,6 +704,40 @@ window.TemeriaPublicPlayer || {
   }
 };
 
+/* =========================================================
+   HIDDEN AUTOPLAY FIX
+========================================================= */
+
+setTimeout(()=>{
+
+  const hiddenVideos =
+    document.querySelectorAll(
+      ".temeria-hidden-autoplay"
+    );
+
+  hiddenVideos.forEach(v=>{
+
+    v.volume = 1;
+    v.muted = false;
+
+    const p = v.play();
+
+    if(p){
+
+      p.catch(err=>{
+
+        console.log(
+          "TEMERIA AUTOPLAY BLOCK",
+          err
+        );
+
+      });
+
+    }
+
+  });
+
+},1000);
 /* =========================================================
    EXPORT
 ========================================================= */

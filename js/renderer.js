@@ -375,20 +375,21 @@ const image =
   state.github?.ogImageUrl ||
   "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
 
- let img =
-  "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg";
+let img = image;
 
-  if(
-    image &&
-    !image.startsWith("data:") &&
-    !image.startsWith("blob:")
-  ){
-    img = image.startsWith("http")
-      ? image
-      : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
-        image.replace(/^\/+/, "");
-  }
+if(
+  image &&
+  !image.startsWith("data:") &&
+  !image.startsWith("blob:")
+){
+  img = image.startsWith("http")
+    ? image
+    : "https://alexcaos75.github.io/Temeria-Media-Suite/" +
+      image.replace(/^\/+/, "");
 
+  img += (img.includes("?") ? "&" : "?") +
+         "v=" + Date.now();
+}
 return `
 <meta property="og:title" content="${html(title)}">
 <meta property="og:description" content="${html(desc)}">

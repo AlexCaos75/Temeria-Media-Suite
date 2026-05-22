@@ -177,8 +177,8 @@ const uiImage =
 
 state.media.mainImage =
   uiImage ||
+  old.media?.mainImagePublic ||
   old.media?.mainImage ||
-  state.media.mainImageRaw ||
   "";
 
 state.media.mainImagePublic =

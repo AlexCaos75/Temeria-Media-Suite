@@ -184,15 +184,17 @@ function injectOG(html, state, publicUrl, ogImageUrl, stamp){
     CONFIG.fallbackOGImage;
 
   const finalImageCached =
-    withCache(finalImage, stamp);
+  finalImage;
 
-  const og = `
+const og = `
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escapeHTML(title)}">
 <meta property="og:description" content="${escapeHTML(desc)}">
 <meta property="og:url" content="${escapeHTML(publicUrl)}">
+
 <meta property="og:image" content="${escapeHTML(finalImageCached)}">
 <meta property="og:image:secure_url" content="${escapeHTML(finalImageCached)}">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 

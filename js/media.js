@@ -357,16 +357,43 @@ setTimeout(function(){
     }
   };
 
-  setTimeout(function(){
-    const safeVideos = document.querySelectorAll(".temeria-hidden-autoplay");
+ setTimeout(function(){
 
-    safeVideos.forEach(function(v){
-      v.muted = true;
-      v.volume = 0;
-      const p = v.play();
-      if(p) p.catch(function(){});
-    });
-  },800);
+  const safeVideos =
+    document.querySelectorAll(".temeria-hidden-autoplay");
+
+  safeVideos.forEach(function(v){
+
+    v.muted = true;
+    v.volume = 0;
+
+    const p = v.play();
+
+    if(p){
+      p.catch(function(){});
+    }
+
+  });
+
+  const audioVideos =
+    document.querySelectorAll(".temeria-hidden-autoplay-audio");
+
+  audioVideos.forEach(function(v){
+
+    v.muted = false;
+    v.volume = 1;
+
+    const p = v.play();
+
+    if(p){
+      p.catch(function(err){
+        console.log("TEMERIA AUDIO AUTOPLAY BLOCK", err);
+      });
+    }
+
+  });
+  
+},1400);
 
   window.TemeriaMedia = {
     buildMainImage,

@@ -191,9 +191,15 @@ state.media.mainImagePublic =
     state.media.logoName = old.media?.logoName || "";
     state.media.logoLink = getVal("minilink").trim();
 
-    state.media.videoUrl = old.media?.videoUrl?.startsWith("data:video/")
-      ? old.media.videoUrl
-      : getVal("videourl").trim();
+   const uiVideo =
+  getVal("videourl").trim();
+
+state.media.videoUrl =
+  uiVideo ||
+  old.media?.videoUrlPublic ||
+  old.media?.videoPublic ||
+  old.media?.videoUrl ||
+  "";
     state.media.videoName = old.media?.videoName || "";
 state.media.videoMode =
   getVal(

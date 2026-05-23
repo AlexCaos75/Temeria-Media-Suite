@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎞️ Temeria GIF/Card Tab Generator</title>
+
+<style>
+:root{
+  --bg:#070a12;
+  --panel:#111827;
+  --panel2:#1f2937;
+  --txt:#eafcff;
+  --muted:#a8c7d8;
+  --cyan:#00f6ff;
+  --violet:#b06cff;
+  --green:#25d366;
+  --pink:#ff4fd8;
+  --gold:#facc15;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  min-height:100vh;
+  padding:24px;
+  background:
+    radial-gradient(circle at top,#182033,#070a12 58%,#020617),
+    linear-gradient(135deg,#020617,#111827);
+  color:var(--txt);
+  font-family:Arial, sans-serif;
+}
+
+.container{
+  max-width:1180px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  margin:10px 0 6px;
+  font-size:34px;
+  color:var(--cyan);
+  text-shadow:0 0 20px var(--cyan),0 0 45px var(--violet);
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:22px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr;}
+  body{padding:14px;}
+}
+
+.box{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02)),
+    var(--panel);
+  border:1px solid rgba(0,246,255,.22);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:
+    0 0 35px rgba(0,246,255,.08),
+    0 0 55px rgba(176,108,255,.08),
+    0 22px 60px rgba(0,0,0,.35);
+}
+
+label{
+  display:block;
+  margin-top:13px;
+  font-weight:bold;
+  color:#8dfcff;
+}
+
+input, textarea, select{
+  width:100%;
+  margin-top:6px;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid rgba(0,246,255,.28);
+  background:#0b1220;
+  color:white;
+  outline:none;
+}
+
+textarea{
+  resize:vertical;
+  min-height:80px;
+}
+
+button, .link-btn{
+  display:inline-block;
+  border:none;
+  border-radius:999px;
+  padding:12px 18px;
+  margin:6px 6px 0 0;
+  cursor:pointer;
+  font-weight:bold;
+  text-decoration:none;
+  color:white;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  box-shadow:0 0 22px rgba(176,108,255,.28);
+}
+
+button.green, .link-btn.green{
+  background:linear-gradient(90deg,#25d366,#4bf58a);
+  color:#052e16;
+}
+
+button.dark{
+  background:linear-gradient(90deg,#334155,#111827);
+}
+
+button.danger{
+  background:linear-gradient(90deg,#ef4444,#fb7185);
+}
+
+.preview-card{
+  overflow:hidden;
+  border-radius:22px;
+  border:1px solid rgba(176,108,255,.25);
+  background:linear-gradient(135deg,#0b1020,#151a33);
+  box-shadow:0 0 35px rgba(176,108,255,.16);
+}
+
+.preview-media{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#020617;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.preview-media img,
+.preview-media video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.preview-body{
+  padding:16px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(0,246,255,.12);
+  color:#8dfcff;
+  font-size:12px;
+  border:1px solid rgba(0,246,255,.25);
+  margin-bottom:10px;
+}
+
+.preview-title{
+  font-size:24px;
+  font-weight:bold;
+  color:white;
+  text-shadow:0 0 16px rgba(0,246,255,.28);
+  margin-bottom:8px;
+}
+
+.preview-desc{
+  color:#cbd5e1;
+  line-height:1.55;
+}
+
+pre{
+  white-space:pre-wrap;
+  word-break:break-word;
+  background:#020617;
+  color:#d9faff;
+  border:1px solid rgba(0,246,255,.22);
+  border-radius:16px;
+  padding:14px;
+  min-height:260px;
+  max-height:520px;
+  overflow:auto;
+}
+
+.small-note{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>🎞️ Temeria GIF/Card Tab Generator</h1>
+  <div class="subtitle">
+    Incolla il link pubblicato dal Forge e crea il blocco pronto per la pagina GIF/Card di Alex Creative.
+  </div>
+
+  <div class="grid">
+
+    <div class="box">
+      <h2>✨ Dati Card</h2>
+
+      <label>Link card pubblicata dal Forge</label>
+      <input id="cardUrl" placeholder="https://alexcaos75.github.io/Temeria-Media-Suite/cards/nome-card.html">
+
+      <label>Titolo</label>
+      <input id="title" placeholder="Es. Buonanotte Temeria">
+
+      <label>Categoria</label>
+      <select id="category">
+        <option>Buongiorno</option>
+        <option>Buonanotte</option>
+        <option>Temeria</option>
+        <option>Musica</option>
+        <option>Eventi</option>
+        <option>Speciali</option>
+      </select>
+
+      <label>Descrizione breve</label>
+      <textarea id="desc" placeholder="Piccola descrizione poetica della card..."></textarea>
+
+      <label>Preview immagine / GIF / MP4</label>
+      <input id="previewUrl" placeholder="https://...png / .gif / .mp4 / .webm">
+
+      <label>Tipo preview</label>
+      <select id="previewType">
+        <option value="auto">Auto</option>
+        <option value="image">Immagine / GIF</option>
+        <option value="video">Video MP4/WebM</option>
+      </select>
+
+      <div style="margin-top:16px;">
+        <button onclick="generateTab()">⚡ Genera Tab</button>
+        <button class="green" onclick="copyCode()">📋 Copia Codice</button>
+        <button class="dark" onclick="downloadHTML()">⬇️ Scarica Blocco</button>
+        <button class="danger" onclick="resetForm()">Reset</button>
+      </div>
+
+      <div class="small-note">
+        Consiglio: per animazioni leggere usa MP4 brevi in loop. La pagina li mostrerà come “GIF card”, ma saranno più fluidi.
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>👁️ Anteprima</h2>
+      <div id="previewHost"></div>
+    </div>
+
+  </div>
+
+  <div class="box" style="margin-top:18px;">
+    <h2>📦 Codice HTML da inserire nella pagina GIF/Card</h2>
+    <pre id="codeBox"></pre>
+  </div>
+
+</div>
+
+<script>
+function esc(str){
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+function isVideo(url){
+  return /\.(mp4|webm|mov)(\?|#|$)/i.test(url);
+}
+
+function getPreviewHTML(url, type){
+  if(!url){
+    return '<div style="color:#94a3b8;">Nessuna preview inserita</div>';
+  }
+
+  const finalType = type === "auto"
+    ? (isVideo(url) ? "video" : "image")
+    : type;
+
+  if(finalType === "video"){
+    return `<video src="${esc(url)}" autoplay loop muted playsinline preload="metadata"></video>`;
+  }
+
+  return `<img src="${esc(url)}" alt="">`;
+}
+
+function buildTabHTML(){
+  const cardUrl = document.getElementById("cardUrl").value.trim();
+  const title = document.getElementById("title").value.trim() || "Temeria Card";
+  const category = document.getElementById("category").value;
+  const desc = document.getElementById("desc").value.trim();
+  const previewUrl = document.getElementById("previewUrl").value.trim();
+  const previewType = document.getElementById("previewType").value;
+
+  const wa = "https://wa.me/?text=" + encodeURIComponent(cardUrl);
+
+  return `
+<div class="gif-card-tab" data-category="${esc(category)}" style="
+  background:linear-gradient(135deg,#0b1020,#151a33);
+  border:1px solid rgba(0,246,255,.22);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 0 35px rgba(0,246,255,.08),0 0 55px rgba(176,108,255,.10);
+  max-width:420px;
+">
+
+  <div class="gif-card-media" style="
+    width:100%;
+    aspect-ratio:16/9;
+    background:#020617;
+    overflow:hidden;
+  ">
+    ${getPreviewHTML(previewUrl, previewType)}
+  </div>
+
+  <div class="gif-card-body" style="padding:16px;color:white;font-family:Arial,sans-serif;">
+
+    <div style="
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background:rgba(0,246,255,.12);
+      color:#8dfcff;
+      font-size:12px;
+      border:1px solid rgba(0,246,255,.25);
+      margin-bottom:10px;
+    ">${esc(category)}</div>
+
+    <div style="
+      font-size:22px;
+      font-weight:bold;
+      margin-bottom:8px;
+      text-shadow:0 0 16px rgba(0,246,255,.28);
+    ">${esc(title)}</div>
+
+    <div style="
+      color:#cbd5e1;
+      line-height:1.55;
+      margin-bottom:14px;
+    ">${esc(desc)}</div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="${esc(cardUrl)}" target="_blank" rel="noopener" style="
+        padding:10px 14px;
+        border-radius:999px;
+        background:linear-gradient(90deg,#00f6ff,#b06cff);
+        color:white;
+        text-decoration:none;
+        font-weight:bold;
+      ">Apri Card</a>
+
+      <button onclick="navigator.clipboard.writeText('${esc(cardUrl)}')" style="
+        padding:10px 14px;
+        border:none;
+        border-radius:999px;
+        background:#111827;
+        color:white;
+        cursor:pointer;
+        font-weight:bold;
+      ">Copia Link</button>
+
+      <a href="${esc(wa)}" target="_blank" rel="noopener" style="
+        padding:10px 14px;
+        border-radius:999px;
+        background:linear-gradient(90deg,#25d366,#4bf58a);
+        color:#052e16;
+        text-decoration:none;
+        font-weight:bold;
+      ">WhatsApp</a>
+    </div>
+
+  </div>
+</div>`.trim();
+}
+
+function generateTab(){
+  const html = buildTabHTML();
+  document.getElementById("codeBox").textContent = html;
+
+  const previewUrl = document.getElementById("previewUrl").value.trim();
+  const previewType = document.getElementById("previewType").value;
+  const title = document.getElementById("title").value.trim() || "Temeria Card";
+  const category = document.getElementById("category").value;
+  const desc = document.getElementById("desc").value.trim();
+  const cardUrl = document.getElementById("cardUrl").value.trim();
+
+  document.getElementById("previewHost").innerHTML = `
+    <div class="preview-card">
+      <div class="preview-media">
+        ${getPreviewHTML(previewUrl, previewType)}
+      </div>
+      <div class="preview-body">
+        <div class="badge">${esc(category)}</div>
+        <div class="preview-title">${esc(title)}</div>
+        <div class="preview-desc">${esc(desc)}</div>
+        <div style="margin-top:14px;">
+          <a class="link-btn" href="${esc(cardUrl)}" target="_blank">Apri Card</a>
+          <a class="link-btn green" href="https://wa.me/?text=${encodeURIComponent(cardUrl)}" target="_blank">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function copyCode(){
+  const code = document.getElementById("codeBox").textContent;
+  if(!code.trim()) generateTab();
+  const finalCode = document.getElementById("codeBox").textContent;
+
+  try{
+    await navigator.clipboard.writeText(finalCode);
+    alert("Codice copiato!");
+  }catch(e){
+    alert("Copia non riuscita. Copia manualmente dal box.");
+  }
+}
+
+function downloadHTML(){
+  if(!document.getElementById("codeBox").textContent.trim()) generateTab();
+  const code = document.getElementById("codeBox").textContent;
+  const blob = new Blob([code], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "gif-card-tab.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function resetForm(){
+  ["cardUrl","title","desc","previewUrl"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("category").value = "Buongiorno";
+  document.getElementById("previewType").value = "auto";
+  document.getElementById("previewHost").innerHTML = "";
+  document.getElementById("codeBox").textContent = "";
+}
+
+document.querySelectorAll("input,textarea,select").forEach(el=>{
+  el.addEventListener("input", generateTab);
+  el.addEventListener("change", generateTab);
+});
+
+generateTab();
+</script>
+</body>
+</html>

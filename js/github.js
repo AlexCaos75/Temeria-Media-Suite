@@ -1,6 +1,6 @@
 /* =========================================================
    TEMERIA MEDIA FORGE V5
-   ULTRA STABLE GITHUB PUBLISH ENGINE
+   GITHUB PUBLISH ENGINE + VIDEO PUBLIC URL
 ========================================================= */
 
 (function(){
@@ -13,6 +13,7 @@ const CONFIG = {
 
   cardsFolder: "cards",
   imgFolder: "assets/img",
+  videoFolder: "assets/video",
 
   fallbackOGImage:
     "https://alexcaos75.github.io/Temeria-Media-Suite/assets/thumb/default.jpg",
@@ -56,6 +57,9 @@ function getExt(dataUrl){
   if(dataUrl.includes("gif")) return "gif";
   if(dataUrl.includes("jpeg")) return "jpg";
   if(dataUrl.includes("jpg")) return "jpg";
+  if(dataUrl.includes("mp4")) return "mp4";
+  if(dataUrl.includes("webm")) return "webm";
+  if(dataUrl.includes("mov")) return "mov";
   return "bin";
 }
 
@@ -83,7 +87,6 @@ async function waitForPublicUrl(url, label = "file"){
       }
 
       console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, res.status);
-
     }catch(err){
       console.warn(`[TEMERIA PUBLISH] ${label} non ancora online`, i, err);
     }
@@ -157,10 +160,7 @@ async function uploadImage(state, imageSlug, token){
   try{
     await waitForPublicUrl(publicUrl, "immagine");
   }catch(err){
-    console.warn(
-      "[TEMERIA PUBLISH] immagine non ancora propagata GitHub Pages",
-      err
-    );
+    console.warn("[TEMERIA PUBLISH] immagine non ancora propagata", err);
   }
 
   state.github.ogImageUrl = publicUrl;
@@ -169,7 +169,41 @@ async function uploadImage(state, imageSlug, token){
   return publicUrl;
 }
 
-function injectOG(html, state, publicUrl, ogImageUrl, stamp){
+async function uploadVideo(state, videoSlug, token){
+  const video =
+    state?.media?.videoUrl || "";
+
+  if(!video || !video.startsWith("data:video/")){
+    return state?.media?.videoUrlPublic || state?.media?.videoPublic || "";
+  }
+
+  const ext = getExt(video);
+  const base64 = extractBase64(video);
+
+  if(!base64){
+    throw new Error("Video non valido");
+  }
+
+  const path = `${CONFIG.videoFolder}/${videoSlug}.${ext}`;
+  const publicUrl = `${CONFIG.base}/${path}`;
+
+  console.log("[TEMERIA PUBLISH] Upload video:", path);
+
+  await uploadFile(path, base64, token);
+
+  try{
+    await waitForPublicUrl(publicUrl, "video");
+  }catch(err){
+    console.warn("[TEMERIA PUBLISH] video non ancora propagato", err);
+  }
+
+  state.media.videoUrlPublic = publicUrl;
+  state.media.videoPublic = publicUrl;
+
+  return publicUrl;
+}
+
+function injectOG(html, state, publicUrl, ogImageUrl){
   const title =
     state.content?.title ||
     "Temeria Card";
@@ -183,17 +217,14 @@ function injectOG(html, state, publicUrl, ogImageUrl, stamp){
     ogImageUrl ||
     CONFIG.fallbackOGImage;
 
-  const finalImageCached =
-  finalImage;
-
-const og = `
+  const og = `
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escapeHTML(title)}">
 <meta property="og:description" content="${escapeHTML(desc)}">
 <meta property="og:url" content="${escapeHTML(publicUrl)}">
 
-<meta property="og:image" content="${escapeHTML(finalImageCached)}">
-<meta property="og:image:secure_url" content="${escapeHTML(finalImageCached)}">
+<meta property="og:image" content="${escapeHTML(finalImage)}">
+<meta property="og:image:secure_url" content="${escapeHTML(finalImage)}">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -201,7 +232,7 @@ const og = `
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHTML(title)}">
 <meta name="twitter:description" content="${escapeHTML(desc)}">
-<meta name="twitter:image" content="${escapeHTML(finalImageCached)}">
+<meta name="twitter:image" content="${escapeHTML(finalImage)}">
 `;
 
   html = html.replace(/<meta property="og:[^>]*>/g, "");
@@ -247,8 +278,11 @@ async function publishCardToGitHub(){
 
     const stamp = Date.now();
 
+    const safeSlug =
+      slug || "temeria-card";
+
     const fileName =
-      `${slug || "temeria-card"}-${stamp}.html`;
+      `${safeSlug}-${stamp}.html`;
 
     const cardPath =
       `${CONFIG.cardsFolder}/${fileName}`;
@@ -262,9 +296,15 @@ async function publishCardToGitHub(){
     const ogImageUrl =
       await uploadImage(
         state,
-        `${slug || "temeria-image"}-${stamp}`,
+        `${safeSlug}-${stamp}`,
         token
       );
+
+    await uploadVideo(
+      state,
+      `${safeSlug}-${stamp}`,
+      token
+    );
 
     let html =
       window.TemeriaRenderer.buildStandaloneHTML(
@@ -276,8 +316,7 @@ async function publishCardToGitHub(){
       html,
       state,
       publicUrl,
-      ogImageUrl,
-      stamp
+      ogImageUrl
     );
 
     console.log("[TEMERIA PUBLISH] Upload card:", cardPath);
@@ -291,10 +330,7 @@ async function publishCardToGitHub(){
     try{
       await waitForPublicUrl(publicUrl, "card");
     }catch(err){
-      console.warn(
-        "[TEMERIA PUBLISH] card non ancora propagata GitHub Pages",
-        err
-      );
+      console.warn("[TEMERIA PUBLISH] card non ancora propagata", err);
     }
 
     await delay(CONFIG.whatsappSafetyDelay);

@@ -199,6 +199,7 @@ async function uploadVideo(state, videoSlug, token){
 
   state.media.videoUrlPublic = publicUrl;
   state.media.videoPublic = publicUrl;
+state.media.videoUrl = publicUrl;
 
   return publicUrl;
 }

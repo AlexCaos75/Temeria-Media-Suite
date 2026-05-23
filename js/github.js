@@ -130,18 +130,21 @@ async function uploadImage(state, imageSlug, token){
     state?.media?.mainImage ||
     "";
 
-  if(!img || !img.startsWith("data:image/")){
-    const fallback = CONFIG.fallbackOGImage;
+ if(!img || !img.startsWith("data:image/")){
 
-    state.github.ogImageUrl = fallback;
+  const existing =
+    state.media.mainImagePublic ||
+    state.media.mainImage ||
+    state.github.ogImageUrl ||
+    CONFIG.fallbackOGImage;
 
-    state.media.mainImagePublic =
-      state.media.mainImagePublic ||
-      state.media.mainImage ||
-      "";
+  state.github.ogImageUrl = existing;
 
-    return fallback;
-  }
+  state.media.mainImagePublic =
+    existing;
+
+  return existing;
+}
 
   const ext = getExt(img);
   const base64 = extractBase64(img);

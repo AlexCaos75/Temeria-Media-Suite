@@ -194,10 +194,15 @@ if(!video.startsWith("data:video/")){
   console.warn("[TEMERIA VIDEO] Formato video non valido:", video.slice(0,80));
   return "";
 }
-  let ext = "mp4";
+let ext = "mp4";
 
-if(video.includes("webm")) ext = "webm";
-if(video.includes("mov")) ext = "mov";
+/*
+  Forziamo MP4 per massima compatibilità autoplay/browser.
+*/
+
+if(video.includes("webm")){
+  ext = "webm";
+}
   const base64 = extractBase64(video);
 
   if(!base64){

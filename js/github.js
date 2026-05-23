@@ -173,11 +173,31 @@ async function uploadVideo(state, videoSlug, token){
   const video =
     state?.media?.videoUrl || "";
 
-  if(!video || !video.startsWith("data:video/")){
-    return state?.media?.videoUrlPublic || state?.media?.videoPublic || "";
-  }
+console.log("[TEMERIA VIDEO CHECK]", video.slice(0,80));
 
-  const ext = getExt(video);
+if(video.startsWith("data:image/")){
+  console.warn("[TEMERIA VIDEO] Errore: videoUrl contiene una immagine, non un video");
+  return "";
+}
+
+ if(!video){
+  return state?.media?.videoUrlPublic || state?.media?.videoPublic || "";
+}
+
+if(video.startsWith("http")){
+  state.media.videoUrlPublic = video;
+  state.media.videoPublic = video;
+  return video;
+}
+
+if(!video.startsWith("data:video/")){
+  console.warn("[TEMERIA VIDEO] Formato video non valido:", video.slice(0,80));
+  return "";
+}
+  let ext = "mp4";
+
+if(video.includes("webm")) ext = "webm";
+if(video.includes("mov")) ext = "mov";
   const base64 = extractBase64(video);
 
   if(!base64){
